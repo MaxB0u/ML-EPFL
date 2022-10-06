@@ -1,4 +1,4 @@
-# Setup script for installing dependencies on the machine to test
+# Setup script for installing dependencies on the local development environment to test
 
 echo "Setting up local development environment with required libraries"
 sudo update && sudo apt-get install -y python3-pip
