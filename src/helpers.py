@@ -2,13 +2,6 @@ import numpy as np
 import pandas as pd
 
 
-def build_poly(x, degree):
-    """polynomial basis functions for input data x, for j=0 up to j=degree."""
-    # Polynomial feature expansion of x
-    poly = np.hstack([np.vstack(x ** d) for d in range(degree + 1)])
-    return poly
-
-
 def compute_loss(y, tx, w):
     # Compute MSE loss
 
