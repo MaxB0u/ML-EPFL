@@ -7,7 +7,7 @@ def compute_loss(y, tx, w):
     e = y - tx @ w
     loss = 1 / (2 * len(y)) * (e.T @ e)
 
-    return loss
+    return loss[0][0]
 
 
 def compute_loss_mae(y, tx, w):
@@ -17,11 +17,11 @@ def compute_loss_mae(y, tx, w):
     return loss
 
 
-def compute_loss_logistic(y, tx, w):
+def compute_loss_logistic(y, tx, w, lambda_ = 0):
     # Compute loss for logistic regression
     # Assumes y is either 0 or 1
-    loss = - y.T @ np.log(sigma(tx, w).T) - (1 - y.T) @ np.log(1 - sigma(tx, w).T)
-    return loss[0]
+    loss = - y.T @ np.log(sigma(tx, w)) - (1 - y.T) @ np.log(1 - sigma(tx, w))
+    return loss[0][0] / len(y) + lambda_ * np.sum(np.square(w))
 
 
 def load_data():
@@ -64,14 +64,14 @@ def compute_gradient_logistic(y, tx, w):
     """Computes the gradient at w."""
     # w is 1xd, tx is nxd -> sigma is 1xn
     sig = sigma(tx, w)
-    # sigma is 1xn, y is 1xn, tx is nxd -> grad is 1xd
-    grad = (sig - y.T) @ tx
+    # sigma is nx1, y is nx1, tx is nxd -> grad is 1xd
+    grad = tx.T @ (sig - y)
 
-    return grad.T
+    return grad / len(y)
 
 
 def sigma(tx, w):
-    return 1 / (1 + np.exp(-(w.T @ tx.T)))
+    return 1 / (1 + np.exp(-(tx @ w)))
 
 
 def batch_iter(y, tx, batch_size=1, num_batches=1, shuffle=True):

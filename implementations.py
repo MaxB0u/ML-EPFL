@@ -1,6 +1,17 @@
 from src.helpers import *
 
 
+def ridge_regression(y, tx, lambda_):
+    lambda_prime = lambda_ * 2 * len(y)
+    a = tx.T @ tx + lambda_prime * np.eye(len(tx.T))
+    b = tx.T @ y
+
+    w_opt = np.linalg.solve(a, b)
+    loss_opt = compute_loss(y, tx, w_opt)
+
+    return w_opt, loss_opt
+
+
 def logistic_regression(y, tx, initial_w, max_iters, gamma, lambda_=0):
     """The Gradient Descent (GD) algorithm for logistic regression."""
 
@@ -9,7 +20,7 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma, lambda_=0):
     losses = []
     w = initial_w
     if max_iters == 0:
-        loss = compute_loss_logistic(y, tx, w)
+        loss = compute_loss_logistic(y, tx, w, lambda_)
         losses.append(loss)
     sgd = False
     for n_iter in range(max_iters):
@@ -19,13 +30,13 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma, lambda_=0):
             for batch_y, batch_tx in batch_iter(y, tx):
                 grad = compute_gradient_logistic(batch_y, batch_tx, w)
                 # In SGD loss is computed only on sampled data
-                loss = compute_loss(batch_y, batch_tx, w)
         else:
             grad = compute_gradient_logistic(y, tx, w)
-            loss = compute_loss_logistic(y, tx, w)
+
 
         # Update gradient
-        w -= gamma * grad + 2*lambda_*w
+        w -= gamma * (grad + 2*lambda_*w)
+        loss = compute_loss_logistic(y, tx, w, lambda_)
 
         # store w and loss
         ws.append(w)
@@ -39,12 +50,3 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma, lambda_=0):
 def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
     """The Gradient Descent (GD) algorithm for logistic regression."""
     return logistic_regression(y, tx, initial_w, max_iters, gamma, lambda_)
-
-
-#y = np.array([[0.], [1.], [1.]])
-#tx = np.array([[2.3, 3.2], [1., 0.1], [1.4, 2.3]])
-#initial_w = np.array([[0.463156], [0.939874]])
-#MAX_ITERS = 0
-#GAMMA = 0.1
-
-#print(logistic_regression(y, tx, initial_w, MAX_ITERS, GAMMA))
