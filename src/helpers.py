@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 
 
 def compute_loss(y, tx, w):
@@ -16,6 +15,81 @@ def compute_loss_mae(y, tx, w):
     e = y - tx @ w
     loss = np.mean(np.abs(e))
     return loss
+
+
+def compute_loss_logistic(y, tx, w):
+    # Compute loss for logistic regression
+    # Assumes y is either 0 or 1
+    loss = - y.T @ np.log(sigma(tx, w).T) - (1 - y.T) @ np.log(1 - sigma(tx, w).T)
+    return loss[0]
+
+
+def load_data():
+    """load data."""
+    data = np.loadtxt("dataEx3.csv", delimiter=",", skiprows=1, unpack=True)
+    x = data[0]
+    y = data[1]
+    return x, y
+
+
+def load_data(path_dataset, x_cols_name, y_col_name):
+    """Load data and convert it to the metric system."""
+
+    x = np.genfromtxt(
+        path_dataset, delimiter=",", skip_header=1, usecols=x_cols_name)
+    y = np.genfromtxt(
+        path_dataset, delimiter=",", skip_header=1, usecols=y_col_name,
+        converters={0: lambda x: 0 if b"Male" in x else 1})
+
+    return x, y
+
+
+def standardize(x_raw):
+    """Standardize the original data set."""
+    mean_x = np.mean(x_raw)
+    x = x_raw - mean_x
+    std_x = np.std(x)
+    x = x / std_x
+    return x
+
+
+def build_model_data(x, y):
+    """Form (y,tX) to get regression data in matrix form."""
+    num_samples = len(y)
+    tx = np.c_[np.ones(num_samples), x]
+    return y, tx
+
+
+def compute_gradient_logistic(y, tx, w):
+    """Computes the gradient at w."""
+    # w is 1xd, tx is nxd -> sigma is 1xn
+    sig = sigma(tx, w)
+    # sigma is 1xn, y is 1xn, tx is nxd -> grad is 1xd
+    grad = (sig - y.T) @ tx
+
+    return grad.T
+
+
+def sigma(tx, w):
+    return 1 / (1 + np.exp(-(w.T @ tx.T)))
+
+
+def batch_iter(y, tx, batch_size=1, num_batches=1, shuffle=True):
+    data_size = len(y)
+
+    if shuffle:
+        shuffle_indices = np.random.permutation(np.arange(data_size))
+        shuffled_y = y[shuffle_indices]
+        shuffled_tx = tx[shuffle_indices]
+    else:
+        shuffled_y = y
+        shuffled_tx = tx
+    for batch_num in range(num_batches):
+        start_index = batch_num * batch_size
+        end_index = min((batch_num + 1) * batch_size, data_size)
+        if start_index != end_index:
+            yield shuffled_y[start_index:end_index], shuffled_tx[start_index:end_index]
+
 
 
 def split_data(dataframe, k):
