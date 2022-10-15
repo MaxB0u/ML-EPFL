@@ -6,7 +6,7 @@ def run():
     path_dataset_tr = './dataset/train.csv'
     path_dataset_te = './dataset/test.csv'
 
-    model_name = 'ridge_regression'
+    model_name = 'logistic_regression'
 
     print("Training model...")
     trained_weights = train_model(path_dataset_tr, model_name)
@@ -23,15 +23,19 @@ def train_model(path_dataset_tr, model_name):
 
     # Get the best hyperparameters
     # Gamma (and lambda if needed
-    lambdas = np.logspace(-4, 0, 10)
+    gammas = [1.]
+    lambdas = [1.0]
     params = dict()
 
     # Search for gamma if needed
     if model_name == 'logistic_regression' or model_name == 'reg_logistic_regression':
-        y = (y > 0) * 1.0
-        gammas = np.logspace(-4, 0, 10)
-    else:
-        gammas = [1.]
+        gammas = np.logspace(-4, 0, 3)
+        params['initial_w'] = np.array([[0.] for _ in range(len(x[0]))])
+        params['max_iters'] = 10
+
+    if model_name == 'ridge_regression' or model_name == 'reg_logistic_regression':
+        lambdas = np.logspace(-4, 0, 3)
+
 
     rmse_tr = []
     rmse_val = []
@@ -58,7 +62,7 @@ def train_model(path_dataset_tr, model_name):
     #  Calculate accuracy on the trained model
     w, loss = get_model_weights(x, y, params, model_name)
     acc = np.sum((y == get_predictions(x, w, model_name)) * 1.0) / len(y)
-    print("The best parameters are: Lambda = " + str(best_lambda) + ", Gamma = " + str(best_gamma) + " yielding an RMSE of " + str(best_rmse))
+    print("The best parameters are: Lambda = " + str(best_lambda) + ", Gamma = " + str(best_gamma) + " yielding an loss of " + str(best_rmse))
     print("Accuracy over the training set:" + str(acc))
 
     return w
@@ -66,6 +70,8 @@ def train_model(path_dataset_tr, model_name):
 
 def test_model(path_dataset_te, model_name, trained_weights):
     x, y, id = preprocess(path_dataset_te)
+
+    id = np.reshape(id, (len(id), 1))
 
     # Re-train model with all parameters
     predictions = test(x, trained_weights, model_name, id)

@@ -1,5 +1,6 @@
 import numpy as np
 from src.helpers import sigma
+import csv
 
 
 def test(x, w, model_name, id):
@@ -8,11 +9,11 @@ def test(x, w, model_name, id):
         """
     pred = get_predictions(x, w, model_name)
 
-    print(pred.shape)
-    print(id.shape)
-
     # id and pred are 1xn arrays
-    res = np.stack((id, pred), axis=1)
+    res = np.stack((id.flatten(), pred.flatten()), axis=1)
+
+    # Write the result to a csv file
+    np.savetxt('./dataset/submission.csv', res, delimiter=',', fmt='%i', header='Id, Prediction', comments='')
 
     return res
 
@@ -24,9 +25,9 @@ def get_predictions(x, w, model_name):
     pred = np.zeros(len(x))
     if model_name == 'ridge_regression':
         y_hat = x @ w
-        pred = [1 if x > 0 else -1 for x in y_hat]
+        pred = np.sign(y_hat)
     elif model_name == 'logistic_regression' or model_name == 'reg_logistic_regression':
         y_hat = sigma(x, w)
-        pred = (y_hat > 0.5) * 1.0
+        pred = np.sign(y_hat - 0.5)
 
     return pred

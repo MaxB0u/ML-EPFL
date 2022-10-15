@@ -20,7 +20,8 @@ def compute_loss_mae(y, tx, w):
 def compute_loss_logistic(y, tx, w, lambda_ = 0):
     # Compute loss for logistic regression
     # Assumes y is either 0 or 1
-    loss = - y.T @ np.log(sigma(tx, w)) - (1 - y.T) @ np.log(1 - sigma(tx, w))
+    # loss = - y.T @ np.log(sigma(tx, w)) - (1 - y.T) @ np.log(1 - sigma(tx, w))
+    loss = np.sum(np.log(1 + np.exp(tx @ w))) - y.T @ tx @ w
     return loss[0][0] / len(y) + lambda_ * np.sum(np.square(w))
 
 
@@ -40,7 +41,7 @@ def load_data(path_dataset, x_cols, y_col, id_col):
     y = np.genfromtxt(
         path_dataset, delimiter=",", skip_header=1, usecols=y_col, dtype=str)
     id = np.genfromtxt(
-        path_dataset, delimiter=",", skip_header=1, usecols=x_cols)
+        path_dataset, delimiter=",", skip_header=1, usecols=id_col)
 
     return x, y, id
 
@@ -72,7 +73,13 @@ def compute_gradient_logistic(y, tx, w):
 
 
 def sigma(tx, w):
-    return 1 / (1 + np.exp(-(tx @ w)))
+    # To prevent overflow
+    z = (tx @ w)
+    if z[0][0] < 0:
+        x = np.exp((z))
+        return x / (1 + x)
+    else:
+        return 1 / (1 + np.exp(-z))
 
 
 def batch_iter(y, tx, batch_size=1, num_batches=1, shuffle=True):

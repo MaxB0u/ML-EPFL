@@ -33,7 +33,6 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma, lambda_=0, epsilon=0
         else:
             grad = compute_gradient_logistic(y, tx, w)
 
-
         # Update gradient
         w -= gamma * (grad + 2*lambda_*w)
         loss = compute_loss_logistic(y, tx, w, lambda_)
@@ -41,8 +40,7 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma, lambda_=0, epsilon=0
         # store w and loss
         ws.append(w)
         losses.append(loss)
-        print("GD iter. {bi}/{ti}: loss={l}, w0={w0}, w1={w1}".format(
-            bi=n_iter, ti=max_iters - 1, l=loss, w0=w[0], w1=w[1]))
+        # print("GD iter. {bi}/{ti}: loss={l}, w0={w0}, w1={w1}".format(bi=n_iter, ti=max_iters - 1, l=loss, w0=w[0], w1=w[1]))
 
         # Exit if no significant change in model weights
         if n_iter > 0 and np.sum(np.square(w - ws[n_iter-1])):
