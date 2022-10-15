@@ -1,43 +1,84 @@
-from src.helpers import *
+from src.train import *
+from src.test import *
+from src.preprocessing import *
+
+def run():
+    path_dataset_tr = './dataset/train.csv'
+    path_dataset_te = './dataset/test.csv'
+
+    model_name = 'logistic_regression'
+
+    print("Training model...")
+    trained_weights = train_model(path_dataset_tr, model_name)
+
+    print("Testing model...")
+    predictions = test_model(path_dataset_te, model_name, trained_weights)
+
+    return predictions
 
 
-path_dataset_tr = './dataset/train.csv'
+def train_model(path_dataset_tr, model_name):
 
-x_col_names = ["DER_mass_MMC",
-               "DER_mass_transverse_met_lep",
-               "DER_mass_vis",
-               "DER_pt_h",
-               "DER_deltaeta_jet_jet",
-               "DER_mass_jet_jet",
-               "DER_prodeta_jet_jet",
-               "DER_deltar_tau_lep",
-               "DER_pt_tot",
-               "DER_sum_pt",
-               "DER_pt_ratio_lep_tau",
-               "DER_met_phi_centrality",
-               "DER_lep_eta_centrality",
-               "PRI_tau_pt",
-               "PRI_tau_eta",
-               "PRI_tau_phi",
-               "PRI_lep_pt",
-               "PRI_lep_eta",
-               "PRI_lep_phi",
-               "PRI_met",
-               "PRI_met_phi",
-               "PRI_met_sumet",
-               "PRI_jet_num",
-               "PRI_jet_leading_pt",
-               "PRI_jet_leading_eta",
-               "PRI_jet_leading_phi",
-               "PRI_jet_subleading_pt",
-               "PRI_jet_subleading_eta",
-               "PRI_jet_subleading_phi",
-               "PRI_jet_all_pt"]
+    x, y, _ = preprocess(path_dataset_tr)
 
-y_col_name = ['Prediction']
+    # Get the best hyperparameters
+    # Gamma (and lambda if needed
+    gammas = [1.]
+    lambdas = [1.0]
+    params = dict()
 
-x_raw, y = load_data(path_dataset_tr, x_col_names, y_col_name)
-x = standardize(x_raw)
-tx = build_model_data(x, y)
+    # Search for gamma if needed
+    if model_name == 'logistic_regression' or model_name == 'reg_logistic_regression':
+        gammas = np.logspace(-4, 0, 3)
+        params['initial_w'] = np.array([[0.] for _ in range(len(x[0]))])
+        params['max_iters'] = 10
 
-#call the models
+    if model_name == 'ridge_regression' or model_name == 'reg_logistic_regression':
+        lambdas = np.logspace(-4, 0, 3)
+
+
+    rmse_tr = []
+    rmse_val = []
+    for lambda_ in lambdas:
+        rmse_tr_g = []
+        rmse_val_g = []
+        params['lambda_'] = lambda_
+        for gamma in gammas:
+            params['gamma'] = gamma
+            kfold = KFoldCrossValidation(x, y, model_name, params)
+            w, _, _, loss_tr_avg, loss_val_avg = kfold.run()
+            rmse_tr_g.append((loss_tr_avg))
+            rmse_val_g.append(loss_val_avg)
+        rmse_tr.append(rmse_tr_g)
+        rmse_val.append(rmse_val_g)
+
+    min_idx = np.argmin(rmse_val)
+    best_lambda = lambdas[min_idx // len(gammas)]
+    best_gamma = gammas[min_idx % len(gammas)]
+    best_rmse = min(np.array(rmse_val).flatten())
+
+    params['lambda_'] = best_lambda
+    params['gamma'] = best_gamma
+    #  Calculate accuracy on the trained model
+    w, loss = get_model_weights(x, y, params, model_name)
+    acc = np.sum((y == get_predictions(x, w, model_name)) * 1.0) / len(y)
+    print("The best parameters are: Lambda = " + str(best_lambda) + ", Gamma = " + str(best_gamma) + " yielding an loss of " + str(best_rmse))
+    print("Accuracy over the training set:" + str(acc))
+
+    return w
+
+
+def test_model(path_dataset_te, model_name, trained_weights):
+    x, y, id = preprocess(path_dataset_te)
+
+    id = np.reshape(id, (len(id), 1))
+
+    # Re-train model with all parameters
+    predictions = test(x, trained_weights, model_name, id)
+
+    return predictions
+
+
+# Run the script
+run()
+

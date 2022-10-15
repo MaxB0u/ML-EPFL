@@ -20,7 +20,8 @@ def compute_loss_mae(y, tx, w):
 def compute_loss_logistic(y, tx, w, lambda_ = 0):
     # Compute loss for logistic regression
     # Assumes y is either 0 or 1
-    loss = - y.T @ np.log(sigma(tx, w)) - (1 - y.T) @ np.log(1 - sigma(tx, w))
+    # loss = - y.T @ np.log(sigma(tx, w)) - (1 - y.T) @ np.log(1 - sigma(tx, w))
+    loss = np.sum(np.log(1 + np.exp(tx @ w))) - y.T @ tx @ w
     return loss[0][0] / len(y) + lambda_ * np.sum(np.square(w))
 
 
@@ -32,16 +33,17 @@ def load_data():
     return x, y
 
 
-def load_data(path_dataset, x_cols_name, y_col_name):
+def load_data(path_dataset, x_cols, y_col, id_col):
     """Load data and convert it to the metric system."""
 
     x = np.genfromtxt(
-        path_dataset, delimiter=",", skip_header=1, usecols=x_cols_name)
+        path_dataset, delimiter=",", skip_header=1, usecols=x_cols)
     y = np.genfromtxt(
-        path_dataset, delimiter=",", skip_header=1, usecols=y_col_name,
-        converters={0: lambda x: 0 if b"Male" in x else 1})
+        path_dataset, delimiter=",", skip_header=1, usecols=y_col, dtype=str)
+    id = np.genfromtxt(
+        path_dataset, delimiter=",", skip_header=1, usecols=id_col)
 
-    return x, y
+    return x, y, id
 
 
 def standardize(x_raw):
@@ -57,7 +59,7 @@ def build_model_data(x, y):
     """Form (y,tX) to get regression data in matrix form."""
     num_samples = len(y)
     tx = np.c_[np.ones(num_samples), x]
-    return y, tx
+    return tx
 
 
 def compute_gradient_logistic(y, tx, w):
@@ -71,7 +73,13 @@ def compute_gradient_logistic(y, tx, w):
 
 
 def sigma(tx, w):
-    return 1 / (1 + np.exp(-(tx @ w)))
+    # To prevent overflow
+    z = (tx @ w)
+    if z[0][0] < 0:
+        x = np.exp((z))
+        return x / (1 + x)
+    else:
+        return 1 / (1 + np.exp(-z))
 
 
 def batch_iter(y, tx, batch_size=1, num_batches=1, shuffle=True):
@@ -91,23 +99,13 @@ def batch_iter(y, tx, batch_size=1, num_batches=1, shuffle=True):
             yield shuffled_y[start_index:end_index], shuffled_tx[start_index:end_index]
 
 
-
-def split_data(dataframe, k):
-    '''
-        Splitting dataset into training and validation set
-    '''
-    df = dataframe.copy()
-
-    # y data is assumed to be in the last column of the dataframe
-    y_val = df[k].loc['Prediction']
-    x_val = df[k].drop(['Id', 'Prediction'], axis=1)
-
-    # Remove the val data, the rest is used for training
-    df.pop(k)
-    df_tr = pd.concat(df)
-    y_tr = df_tr.loc['Prediction']
-    x_tr = df_tr.drop(['Id', 'Prediction'], axis=1)
-
-    return x_tr, y_tr, x_val, y_val
-
+def build_k_indices(y, k_fold, seed=-1):
+    num_row = y.shape[0]
+    interval = int(num_row / k_fold)
+    # Used seed for reproducibility if needed
+    if seed != -1:
+        np.random.seed(seed)
+    indices = np.random.permutation(num_row)
+    k_indices = [indices[k * interval: (k + 1) * interval] for k in range(k_fold)]
+    return np.array(k_indices)
 
