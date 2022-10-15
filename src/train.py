@@ -1,25 +1,31 @@
-from src.helpers import *
-import numpy as np
+from implementations import *
+from src.test import get_predictions
 
 
 class KFoldCrossValidation:
     '''
         Class for K-Fold Cross Validation
+        x : x-data
+        y: y-data
+        model_name: string with the name of the model to use for training
+        params: dict with the params needed in the model (lambda, gamma, initial_w, etc)
     '''
 
-    def __init__(self, df_data):
-        self.df_data = df_data
+    def __init__(self, x, y, model_name, params):
+        self.x = x
+        self.y = y
+        self.model_name = model_name
+        self.params = params
 
-    def run(self, k_folds=10, verbose=True, lambda_=0, reg_type=''):
-        # shuffle data (samples all data in random order)
-        df_shuffled = self.df_data.sample(frac=1)
-
-        # split fractions for 10 (default) fold cross validations
-        split_set = np.array_split(df_shuffled, k_folds)
+    def run(self, k_folds=10, verbose=True):
+        # Shuffle data
+        k_indices = build_k_indices(self.y, k_folds)
 
         # train and validation accuracy for each fold
         loss_val = np.zeros(k_folds)
         loss_tr = np.zeros(k_folds)
+        acc_val = np.zeros(k_folds)
+        acc_tr = np.zeros(k_folds)
 
         # Save trained models for each fold
         weights = []
@@ -27,18 +33,26 @@ class KFoldCrossValidation:
         for k in range(k_folds):
 
             # Get data for the fold
-            x_tr, y_tr, x_val, y_val = split_data(split_set, k)
+            x_val = self.x[k_indices[k]]
+            y_val = self.y[k_indices[k]]
+            tr_indices = np.delete(k_indices, k, axis=0).flatten()
+            x_tr = self.x[tr_indices]
+            y_tr = self.y[tr_indices]
 
             # Would be nice if the model was a separate class
             # See the models.py file to see the interface for it
-            w = ridge_regression(y_tr, x_tr, lambda_)
+            w, _ = get_model_weights(x_tr, y_tr, self.params, self.model_name)
             weights.append(w)
 
-            loss_tr[i] = np.sqrt(2 * compute_loss(y_tr, x_tr, w))
-            loss_val[i] = np.sqrt(2 * compute_loss(y_val, x_val, w))
+            loss_tr[k] = np.sqrt(2 * compute_loss(y_tr, x_tr, w))
+            loss_val[k] = np.sqrt(2 * compute_loss(y_val, x_val, w))
 
-            if verbose: print("Fold " + str(i)+ ", training_rmse = " + str(
-                loss_tr[i]) + ", val. loss = " + str(loss_val[i]))
+            acc_tr[k] = np.sum((y_tr == get_predictions(x_tr, w, self.model_name)) * 1.0) / len(y_tr)
+            acc_val[k] = np.sum((y_val == get_predictions(x_val, w, self.model_name)) * 1.0) / len(y_val)
+
+            if verbose:
+                print("Fold " + str(k)+ ", training rmse = " + str(loss_tr[k]) + ", training acc = " + str(acc_tr[k]) +
+                      ", val loss = " + str(loss_val[k]) + ", val acc = " + str(acc_val[k]))
 
         # average accuracy
         loss_tr_avg = np.average(loss_tr)
@@ -55,21 +69,15 @@ class KFoldCrossValidation:
         return weights, loss_tr, loss_val, loss_tr_avg, loss_val_avg
 
 
-def hyperparam_search(params, df_data, k_folds, param_name=''):
+def get_model_weights(x, y, params, model_name):
+    w = np.zeros(len(x[0]))
+    loss = 0
+    if model_name == 'ridge_regression':
+        w, loss = ridge_regression(y, x, params['lambda_'])
+    elif model_name == 'logistic_regression':
+        w, loss = logistic_regression(y, x, params['initial_w'], params['max_iters'], params['gamma'])
+    elif model_name == 'reg_logistic_regression':
+        w, loss = reg_logistic_regression(y, x, params['lambda_'], params['initial_w'], params['max_iters'], params['gamma'])
 
-    loss_tr_p = []
-    loss_val_p = []
+    return w, loss
 
-    for p in params:
-        kfold = KFoldCrossValidation(df_data.copy())
-
-        if param_name == 'lambda':
-            _, _, _, loss_tr, loss_val = kfold.run(k_folds=k_folds, lambda_=p, verbose=False)
-
-        loss_tr_p.append(loss_tr)
-        loss_val_p.append(loss_val)
-
-    best_loss = min(loss_val_p)
-    best_p = params[np.argmin(loss_val_p)]
-
-    return best_loss, best_p, loss_tr_p, loss_val_p
