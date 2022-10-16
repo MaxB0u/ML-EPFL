@@ -9,7 +9,7 @@ def preprocess(path_dataset):
     id_col = 0
 
     x_raw, y_raw, id = load_data(path_dataset, x_col, y_col, id_col)
-    y = np.array([[1 if x == 's' else -1] for x in y_raw])
+    y = np.array([[1 if x == "s" else -1] for x in y_raw])
     x = standardize(x_raw)
     tx = build_model_data(x, y)
 
