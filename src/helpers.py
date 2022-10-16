@@ -17,7 +17,7 @@ def compute_loss_mae(y, tx, w):
     return loss
 
 
-def compute_loss_logistic(y, tx, w, lambda_ = 0):
+def compute_loss_logistic(y, tx, w, lambda_=0):
     # Compute loss for logistic regression
     # Assumes y is either 0 or 1
     # loss = - y.T @ np.log(sigma(tx, w)) - (1 - y.T) @ np.log(1 - sigma(tx, w))
@@ -36,12 +36,11 @@ def load_data():
 def load_data(path_dataset, x_cols, y_col, id_col):
     """Load data and convert it to the metric system."""
 
-    x = np.genfromtxt(
-        path_dataset, delimiter=",", skip_header=1, usecols=x_cols)
+    x = np.genfromtxt(path_dataset, delimiter=",", skip_header=1, usecols=x_cols)
     y = np.genfromtxt(
-        path_dataset, delimiter=",", skip_header=1, usecols=y_col, dtype=str)
-    id = np.genfromtxt(
-        path_dataset, delimiter=",", skip_header=1, usecols=id_col)
+        path_dataset, delimiter=",", skip_header=1, usecols=y_col, dtype=str
+    )
+    id = np.genfromtxt(path_dataset, delimiter=",", skip_header=1, usecols=id_col)
 
     return x, y, id
 
@@ -74,7 +73,7 @@ def compute_gradient_logistic(y, tx, w):
 
 def sigma(tx, w):
     # To prevent overflow
-    z = (tx @ w)
+    z = tx @ w
     if z[0][0] < 0:
         x = np.exp((z))
         return x / (1 + x)
@@ -106,6 +105,5 @@ def build_k_indices(y, k_fold, seed=-1):
     if seed != -1:
         np.random.seed(seed)
     indices = np.random.permutation(num_row)
-    k_indices = [indices[k * interval: (k + 1) * interval] for k in range(k_fold)]
+    k_indices = [indices[k * interval : (k + 1) * interval] for k in range(k_fold)]
     return np.array(k_indices)
-
