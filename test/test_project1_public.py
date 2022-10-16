@@ -33,9 +33,9 @@ def tx():
     return np.array([[2.3, 3.2], [1.0, 0.1], [1.4, 2.3]])
 
 
-# @pytest.mark.skip(
-#     reason="Currently using a private Github repository - enable this before submission"
-# )
+@pytest.mark.skip(
+    reason="Currently using a private Github repository - enable this before submission"
+)
 def test_github_link_format():
     assert GITHUB_LINK.startswith(
         "https://github.com/"
