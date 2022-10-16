@@ -1,7 +1,7 @@
 # Setup script for installing dependencies on the local development environment to test
 
 echo "Setting up local development environment with required libraries"
-sudo update && sudo apt-get install -y python3-pip python3-tk python3-pytest
+sudo apt-get update && sudo apt-get install -y python3-pip python3-tk python3-pytest
 sudo apt-get install -y git-lfs
 git lfs install
 

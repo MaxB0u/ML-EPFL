@@ -3,8 +3,8 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )" 
 
-black "$DIR"/
-TEST_OUTPUT=$(pytest-3 --github_link "$DIR"/)
+black "$DIR"
+TEST_OUTPUT=$(pytest-3 --github_link "$DIR")
 FAILURE_PATTERN="failed"
 
 if [[ $TEST_OUTPUT == *"$FAILURE_PATTERN"* ]];

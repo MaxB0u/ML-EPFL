@@ -1,0 +1,46 @@
+on:
+  pull_request:
+    branches:
+    - main
+jobs:
+  run_tests:
+    runs-on: ubuntu-latest
+    
+    outputs:
+      test_status: ${{ steps.step4.outputs.test }}
+    steps:
+    - name: Checkout repository
+      id: step1
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 2
+        lfs: ${{ matrix.test-group == 'content' }}
+        persist-credentials: 'false'
+    
+    - name: Install Dependencies
+      id: step2
+      run:  |
+        chmod +x ./setup.sh
+        ./setup.sh
+    
+    - name: Black linter check
+      id: step3
+      uses: psf/black@stable
+      with:
+        options: "--check --verbose"
+        src: "./"
+        version: "~= 22.0"
+    
+    - name: Run Tests
+      id: step4
+      run:  |
+        chmod +x ./run_tests.sh
+        TEST_OUTPUT=$(./run_tests.sh)
+        if [[ $TEST_OUTPUT == *"ERROR"* ]];
+        then
+          echo "::error::Test(s) failure detected"
+          exit 1
+        else
+          echo "::debug::All tests passed"
+          exit 0
+        fi
