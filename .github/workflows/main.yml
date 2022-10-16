@@ -39,6 +39,8 @@ jobs:
         if [[ $TEST_OUTPUT == *"ERROR"* ]];
         then
           echo "::error::Test(s) failure detected"
+          exit 1
         else
           echo "::debug::All tests passed"
+          exit 0
         fi
