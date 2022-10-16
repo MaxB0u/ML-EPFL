@@ -1,5 +1,5 @@
 # ML-EPFL
-Solutions to Machine Learning Projects at EPFL
+Solutions to Machine Learning Projects at EPFL\
 Link to the [dataset and submission platform](https://www.aicrowd.com/challenges/epfl-machine-learning-higgs).\
 Register for this using your **EPFL email address** so that we can create a team for our submissions.
 
