@@ -35,7 +35,7 @@ jobs:
       id: step4
       run:  |
         chmod +x ./run_tests.sh
-        TEST_OUTPUT=$(run_tests.sh)
+        TEST_OUTPUT=$(./run_tests.sh)
         if [[ $TEST_OUTPUT == *"ERROR"* ]];
         then
           echo "::error::Test(s) failure detected"
