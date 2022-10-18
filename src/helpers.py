@@ -1,5 +1,5 @@
 import numpy as np
-
+import math
 
 def compute_loss(y, tx, w):
     # Compute MSE loss
@@ -21,7 +21,15 @@ def compute_loss_logistic(y, tx, w, lambda_=0):
     # Compute loss for logistic regression
     # Assumes y is either 0 or 1
     # loss = - y.T @ np.log(sigma(tx, w)) - (1 - y.T) @ np.log(1 - sigma(tx, w))
-    loss = np.sum(np.log(1 + np.exp(tx @ w))) - y.T @ tx @ w
+    Z = tx @ w
+    #loss = 0
+    #for z in Z:
+    #    if z[0] < 0:
+    #        loss = math.log(1 + math.exp(z[0]))
+    #    else:
+    #        loss = math.log(1 + math.exp(-z[0])) - math.log(math.exp(-z[0]))
+    #loss -= y.T @ z
+    loss = np.sum(np.log(1 + np.exp(Z))) - y.T @ Z
     return loss[0][0] / len(y) + lambda_ * np.sum(np.square(w))
 
 
@@ -45,12 +53,22 @@ def load_data(path_dataset, x_cols, y_col, id_col):
     return x, y, id
 
 
-def standardize(x_raw):
+def standardize(x):
     """Standardize the original data set."""
-    mean_x = np.mean(x_raw)
-    x = x_raw - mean_x
-    std_x = np.std(x)
+    mean_x = np.mean(x, axis=0)
+    x = x - mean_x
+    std_x = np.std(x, axis=0)
     x = x / std_x
+    return x, mean_x, std_x
+
+
+def robust_standardize(x):
+    median = np.median(x, axis=0)
+    p25 = np.percentile(x, 25, axis=0)
+    p75 = np.percentile(x, 75, axis=0)
+
+    x = (x - median) / (p75 - p25)
+
     return x
 
 
@@ -64,21 +82,23 @@ def build_model_data(x, y):
 def compute_gradient_logistic(y, tx, w):
     """Computes the gradient at w."""
     # w is 1xd, tx is nxd -> sigma is 1xn
-    sig = sigma(tx, w)
+    sig = sigmoid(tx, w)
     # sigma is nx1, y is nx1, tx is nxd -> grad is 1xd
     grad = tx.T @ (sig - y)
 
     return grad / len(y)
 
 
-def sigma(tx, w):
+def sigmoid(tx, w):
     # To prevent overflow
-    z = tx @ w
-    if z[0][0] < 0:
-        x = np.exp((z))
-        return x / (1 + x)
-    else:
-        return 1 / (1 + np.exp(-z))
+    Z = (tx @ w)
+    #for z in Z:
+    #    if z[0] < 0:
+    #        sig = math.exp(z[0]) / (1 + math.exp(z[0]))
+    #    else:
+    #        sig = 1 / (1 + math.exp(-z[0]))
+    #return sig
+    return 1 / (1 + np.exp(-Z))
 
 
 def batch_iter(y, tx, batch_size=1, num_batches=1, shuffle=True):
@@ -107,3 +127,53 @@ def build_k_indices(y, k_fold, seed=-1):
     indices = np.random.permutation(num_row)
     k_indices = [indices[k * interval : (k + 1) * interval] for k in range(k_fold)]
     return np.array(k_indices)
+
+
+def scale(x):
+    x = x / np.amax(np.abs(x), axis=0)
+    return x
+
+
+def remove_outliers(x, y, num_std_dev):
+    std_x = np.std(x, axis=0)
+    x_no_outliers = []
+    y_no_outliers = []
+    for i in range(len(y)):
+        add = True
+        for j in range(len(x[0])):
+            if x[i][j] < -num_std_dev*std_x[j] or x[i][j] > num_std_dev*std_x[j]:
+                add = False
+                break
+
+        if add:
+            x_no_outliers.append(x[i])
+            y_no_outliers.append(y[i])
+
+    x_no_outliers = np.array(x_no_outliers)
+    y_no_outliers = np.array(y_no_outliers)
+    return x_no_outliers, y_no_outliers
+
+
+def clip_outliers(x, y, num_std_dev):
+    std_x = np.std(x, axis=0)
+    for i in range(len(y)):
+        add = True
+        for j in range(len(x[0])):
+            if x[i][j] < -num_std_dev*std_x[j]:
+                x[i][j] = -num_std_dev*std_x[j]
+            elif x[i][j] > num_std_dev*std_x[j]:
+                x[i][j] = num_std_dev*std_x[j]
+
+    return x, y
+
+
+def impute_outliers(x, y, num_std_dev):
+    std_x = np.std(x, axis=0)
+    median_x = np.median(x, axis=0)
+    for i in range(len(y)):
+        add = True
+        for j in range(len(x[0])):
+            if x[i][j] < -num_std_dev*std_x[j] or x[i][j] > num_std_dev*std_x[j]:
+                x[i][j] = median_x[j]
+
+    return x, y

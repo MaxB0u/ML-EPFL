@@ -29,13 +29,15 @@ def train_model(path_dataset_tr, model_name):
     params = dict()
 
     # Search for gamma if needed
-    if model_name == "logistic_regression" or model_name == "reg_logistic_regression":
-        gammas = np.logspace(-4, 0, 3)
-        params["initial_w"] = np.array([[0.0] for _ in range(len(x[0]))])
-        params["max_iters"] = 10
 
-    if model_name == "ridge_regression" or model_name == "reg_logistic_regression":
-        lambdas = np.logspace(-4, 0, 3)
+    if model_name == 'logistic_regression' or model_name == 'reg_logistic_regression':
+        gammas = np.logspace(-3, 0, 5)
+        params['initial_w'] = np.array([[0.] for _ in range(len(x[0]))])
+        params['max_iters'] = 20
+        y = (y > 0) * 1.0
+
+    if model_name == 'ridge_regression' or model_name == 'reg_logistic_regression':
+        lambdas = np.logspace(-4, -1, 3)
 
     rmse_tr = []
     rmse_val = []
