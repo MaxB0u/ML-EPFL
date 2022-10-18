@@ -79,4 +79,3 @@ def build_poly(x, degree):
     poly = np.hstack([np.vstack(x**d) for d in range(1,degree+1)])
     return poly
 
-
