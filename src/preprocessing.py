@@ -4,7 +4,8 @@ from src.helpers import *
 def preprocess(path_dataset):
     # For now use all columns, later do something better
     print("Loading data from " + path_dataset)
-    x_col = tuple(range(2, 32))
+    #x_col = tuple(range(2, 32))
+    x_col = tuple(range(2, 16))
     y_col = 1
     id_col = 0
 
@@ -22,9 +23,13 @@ def preprocess(path_dataset):
     #    num_std_dev = 2
     #    x, y = clip_outliers(x, y, num_std_dev)
     #    x, _, _ = standardize(x)
+    x = replace_invalid_values(x)
+
     #x = robust_standardize(x)
-    num_std_dev = 2
+
+    num_std_dev = 3
     #x, y = remove_outliers(x, y, num_std_dev)
+    #x, y = impute_outliers(x, y, num_std_dev)
     x, y = clip_outliers(x, y, num_std_dev)
     x, _, _ = standardize(x)
     # Take only the main PCA
@@ -32,10 +37,11 @@ def preprocess(path_dataset):
 
     #x = scale(x)
 
-    x = build_poly(x, 3)
+    x = build_poly(x, 4)
     #x, _, _ = standardize(x)
     x = build_model_data(x, y)
     print("Finished preprocessing")
+
 
     #test_decisiontree(tx, y.T[0])
     print(x.shape)
@@ -78,5 +84,15 @@ def build_poly(x, degree):
     # ***************************************************
     poly = np.hstack([np.vstack(x**d) for d in range(1,degree+1)])
     return poly
+
+def log_features(x):
+    for i in range(len(x)):
+        for j in range(len(x[0])):
+            if x[i][j] > 0:
+                x[i][j] = np.log(x[i][j])
+            elif x[i][j] < 0:
+                x[i][j] = -np.log(-x[i][j])
+    return x
+
 
 

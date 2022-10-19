@@ -172,9 +172,18 @@ def impute_outliers(x, y, num_std_dev):
     std_x = np.std(x, axis=0)
     median_x = np.median(x, axis=0)
     for i in range(len(y)):
-        add = True
         for j in range(len(x[0])):
             if x[i][j] < -num_std_dev*std_x[j] or x[i][j] > num_std_dev*std_x[j]:
                 x[i][j] = median_x[j]
 
     return x, y
+
+
+def replace_invalid_values(x):
+    mean_x = np.mean(x, axis=0)
+    for i in range(len(x)):
+        for j in range(len(x[0])):
+            if x[i][j] == -999.0:
+                x[i][j] = mean_x[j]
+
+    return x
