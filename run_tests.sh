@@ -6,12 +6,12 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 black "$DIR"
 TEST_OUTPUT="$(pytest-3 --github_link "$DIR")"
 FAILURE_PATTERN="failed"
-LOG_ALL_TEST_OUTPUTS=true
+LOG_ALL_TEST_OUTPUTS=false
 IS_GITHUB_ACTION=$1
 
 if [ -z "$IS_GITHUB_ACTION" ];
 then
-    LOG_ALL_TEST_OUTPUTS=false
+    LOG_ALL_TEST_OUTPUTS=true # Only show full logs for local run
 fi
 
 if [[ $TEST_OUTPUT == *"$FAILURE_PATTERN"* ]];
