@@ -12,7 +12,7 @@ def ridge_regression(y, tx, lambda_):
     return w_opt, loss_opt
 
 
-def logistic_regression(y, tx, initial_w, max_iters, gamma, lambda_=0):
+def logistic_regression(y, tx, initial_w, max_iters, gamma, lambda_=0, epsilon=0.01):
     """The Gradient Descent (GD) algorithm for logistic regression."""
 
     # Define parameters to store w and loss
