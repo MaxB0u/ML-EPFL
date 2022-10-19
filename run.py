@@ -2,11 +2,12 @@ from src.train import *
 from src.test import *
 from src.preprocessing import *
 
-def run():
-    path_dataset_tr = './dataset/train.csv'
-    path_dataset_te = './dataset/test.csv'
 
-    model_name = 'logistic_regression'
+def run():
+    path_dataset_tr = "./dataset/train.csv"
+    path_dataset_te = "./dataset/test.csv"
+
+    model_name = "logistic_regression"
 
     print("Training model...")
     trained_weights = train_model(path_dataset_tr, model_name)
@@ -23,11 +24,12 @@ def train_model(path_dataset_tr, model_name):
 
     # Get the best hyperparameters
     # Gamma (and lambda if needed
-    gammas = [1.]
+    gammas = [1.0]
     lambdas = [1.0]
     params = dict()
 
     # Search for gamma if needed
+
     if model_name == 'logistic_regression' or model_name == 'reg_logistic_regression':
         gammas = np.logspace(-2, -1, 7)
         params['initial_w'] = np.array([[0.] for _ in range(len(x[0]))])
@@ -42,9 +44,9 @@ def train_model(path_dataset_tr, model_name):
     for lambda_ in lambdas:
         rmse_tr_g = []
         rmse_val_g = []
-        params['lambda_'] = lambda_
+        params["lambda_"] = lambda_
         for gamma in gammas:
-            params['gamma'] = gamma
+            params["gamma"] = gamma
             kfold = KFoldCrossValidation(x, y, model_name, params)
             w, _, _, loss_tr_avg, loss_val_avg = kfold.run()
             rmse_tr_g.append((loss_tr_avg))
@@ -57,12 +59,19 @@ def train_model(path_dataset_tr, model_name):
     best_gamma = gammas[min_idx % len(gammas)]
     best_rmse = min(np.array(rmse_val).flatten())
 
-    params['lambda_'] = best_lambda
-    params['gamma'] = best_gamma
+    params["lambda_"] = best_lambda
+    params["gamma"] = best_gamma
     #  Calculate accuracy on the trained model
     w, loss = get_model_weights(x, y, params, model_name)
     acc = np.sum((y == get_predictions(x, w, model_name)) * 1.0) / len(y)
-    print("The best parameters are: Lambda = " + str(best_lambda) + ", Gamma = " + str(best_gamma) + " yielding an loss of " + str(best_rmse))
+    print(
+        "The best parameters are: Lambda = "
+        + str(best_lambda)
+        + ", Gamma = "
+        + str(best_gamma)
+        + " yielding an loss of "
+        + str(best_rmse)
+    )
     print("Accuracy over the training set:" + str(acc))
 
     return w
@@ -81,4 +90,3 @@ def test_model(path_dataset_te, model_name, trained_weights):
 
 # Run the script
 run()
-

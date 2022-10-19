@@ -85,6 +85,7 @@ def build_poly(x, degree):
     poly = np.hstack([np.vstack(x**d) for d in range(1,degree+1)])
     return poly
 
+
 def log_features(x):
     for i in range(len(x)):
         for j in range(len(x[0])):
@@ -93,6 +94,3 @@ def log_features(x):
             elif x[i][j] < 0:
                 x[i][j] = -np.log(-x[i][j])
     return x
-
-
-
