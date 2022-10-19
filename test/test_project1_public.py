@@ -91,6 +91,7 @@ def test_black_format(github_repo_path: pathlib.Path):
             pass
 
 
+@pytest.mark.skip(reason="Not implemented yet - please enable once no TODOs left")
 def test_no_todo_left(github_repo_path: pathlib.Path):
     python_files = set(github_repo_path.glob("**/*.py")) - set(
         github_repo_path.glob("test/test_project1_public.py")
@@ -158,7 +159,6 @@ def test_least_squares(student_implementations, y, tx):
     assert w.shape == expected_w.shape
 
 
-@pytest.mark.skip(reason="Not implemented yet - please enable once it is implemented")
 def test_ridge_regression_lambda0(student_implementations, y, tx):
     lambda_ = 0.0
     w, loss = student_implementations.ridge_regression(y, tx, lambda_)
@@ -172,7 +172,6 @@ def test_ridge_regression_lambda0(student_implementations, y, tx):
     assert w.shape == expected_w.shape
 
 
-@pytest.mark.skip(reason="Not implemented yet - please enable once it is implemented")
 def test_ridge_regression_lambda1(student_implementations, y, tx):
     lambda_ = 1.0
     w, loss = student_implementations.ridge_regression(y, tx, lambda_)
