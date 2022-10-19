@@ -34,7 +34,7 @@ jobs:
     - name: Run Tests
       id: step4
       run:  |
-        chmod +x ./run_tests.sh
+        chmod +x ./run_tests.sh "github-action"
         TEST_OUTPUT=$(./run_tests.sh)
         if [[ $TEST_OUTPUT == *"ERROR"* ]];
         then
