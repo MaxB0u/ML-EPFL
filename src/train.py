@@ -44,12 +44,16 @@ class KFoldCrossValidation:
             w, _ = get_model_weights(x_tr, y_tr, self.params, self.model_name)
             weights.append(w)
 
-            if self.model_name == 'logistic_regression':
+            if self.model_name == "logistic_regression":
                 loss_tr[k] = compute_loss_logistic(y_tr, x_tr, w)
                 loss_val[k] = compute_loss_logistic(y_val, x_val, w)
-            elif self.model_name == 'reg_logistic_regression':
-                loss_tr[k] = compute_loss_logistic(y_tr, x_tr, w, self.params['lambda_'])
-                loss_val[k] = compute_loss_logistic(y_val, x_val, w, self.params['lambda_'])
+            elif self.model_name == "reg_logistic_regression":
+                loss_tr[k] = compute_loss_logistic(
+                    y_tr, x_tr, w, self.params["lambda_"]
+                )
+                loss_val[k] = compute_loss_logistic(
+                    y_val, x_val, w, self.params["lambda_"]
+                )
 
             else:
                 loss_tr[k] = np.sqrt(2 * compute_loss(y_tr, x_tr, w))
@@ -62,10 +66,10 @@ class KFoldCrossValidation:
                 (y_val == get_predictions(x_val, w, self.model_name)) * 1.0
             ) / len(y_val)
 
-            #print(y_tr)
-            #print(get_predictions(x_val, w, self.model_name))
-            #print(np.sum((y_tr == get_predictions(x_tr, w, self.model_name)) * 1.0))
-            #print(len(y_tr))
+            # print(y_tr)
+            # print(get_predictions(x_val, w, self.model_name))
+            # print(np.sum((y_tr == get_predictions(x_tr, w, self.model_name)) * 1.0))
+            # print(len(y_tr))
 
             if verbose:
                 print(
