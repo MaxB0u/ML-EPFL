@@ -1,6 +1,7 @@
 import numpy as np
 import math
 
+
 def compute_loss(y, tx, w):
     # Compute MSE loss
 
@@ -22,13 +23,13 @@ def compute_loss_logistic(y, tx, w, lambda_=0):
     # Assumes y is either 0 or 1
     # loss = - y.T @ np.log(sigma(tx, w)) - (1 - y.T) @ np.log(1 - sigma(tx, w))
     Z = tx @ w
-    #loss = 0
-    #for z in Z:
+    # loss = 0
+    # for z in Z:
     #    if z[0] < 0:
     #        loss = math.log(1 + math.exp(z[0]))
     #    else:
     #        loss = math.log(1 + math.exp(-z[0])) - math.log(math.exp(-z[0]))
-    #loss -= y.T @ z
+    # loss -= y.T @ z
     loss = np.sum(np.log(1 + np.exp(Z))) - y.T @ Z
     return loss[0][0] / len(y) + lambda_ * np.sum(np.square(w))
 
@@ -91,13 +92,13 @@ def compute_gradient_logistic(y, tx, w):
 
 def sigmoid(tx, w):
     # To prevent overflow
-    Z = (tx @ w)
-    #for z in Z:
+    Z = tx @ w
+    # for z in Z:
     #    if z[0] < 0:
     #        sig = math.exp(z[0]) / (1 + math.exp(z[0]))
     #    else:
     #        sig = 1 / (1 + math.exp(-z[0]))
-    #return sig
+    # return sig
     return 1 / (1 + np.exp(-Z))
 
 
@@ -141,7 +142,7 @@ def remove_outliers(x, y, num_std_dev):
     for i in range(len(y)):
         add = True
         for j in range(len(x[0])):
-            if x[i][j] < -num_std_dev*std_x[j] or x[i][j] > num_std_dev*std_x[j]:
+            if x[i][j] < -num_std_dev * std_x[j] or x[i][j] > num_std_dev * std_x[j]:
                 add = False
                 break
 
@@ -159,10 +160,10 @@ def clip_outliers(x, y, num_std_dev):
     for i in range(len(y)):
         add = True
         for j in range(len(x[0])):
-            if x[i][j] < -num_std_dev*std_x[j]:
-                x[i][j] = -num_std_dev*std_x[j]
-            elif x[i][j] > num_std_dev*std_x[j]:
-                x[i][j] = num_std_dev*std_x[j]
+            if x[i][j] < -num_std_dev * std_x[j]:
+                x[i][j] = -num_std_dev * std_x[j]
+            elif x[i][j] > num_std_dev * std_x[j]:
+                x[i][j] = num_std_dev * std_x[j]
 
     return x, y
 
@@ -172,7 +173,7 @@ def impute_outliers(x, y, num_std_dev):
     median_x = np.median(x, axis=0)
     for i in range(len(y)):
         for j in range(len(x[0])):
-            if x[i][j] < -num_std_dev*std_x[j] or x[i][j] > num_std_dev*std_x[j]:
+            if x[i][j] < -num_std_dev * std_x[j] or x[i][j] > num_std_dev * std_x[j]:
                 x[i][j] = median_x[j]
 
     return x, y
