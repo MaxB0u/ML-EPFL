@@ -187,3 +187,23 @@ def replace_invalid_values(x):
                 x[i][j] = mean_x[j]
 
     return x
+
+
+def compute_gradient(y, tx, w):
+    e = y - tx @ w
+    return -1 / len(y) * (tx.T @ e)
+
+
+def build_poly(x, degree):
+    poly = np.hstack([np.vstack(x**d) for d in range(1, degree + 1)])
+    return poly
+
+
+def log_features(x):
+    for i in range(len(x)):
+        for j in range(len(x[0])):
+            if x[i][j] > 0:
+                x[i][j] = np.log(x[i][j])
+            elif x[i][j] < 0:
+                x[i][j] = -np.log(-x[i][j])
+    return x

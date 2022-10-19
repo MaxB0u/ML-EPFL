@@ -1,6 +1,57 @@
 from src.helpers import *
 
 
+def mean_squared_error_gd(y, tx, initial_w, max_iters, gamma):
+    # Define parameters to store w and loss
+    ws = [initial_w]
+    losses = []
+    loss = compute_loss(y, tx, initial_w)
+    w = initial_w
+    for n_iter in range(max_iters):
+        grad = compute_gradient(y, tx, w)
+        w = w - gamma * grad
+
+        loss = compute_loss(y, tx, w)
+        # store w and loss
+        ws.append(w)
+        losses.append(loss)
+        # print("GD iter. {bi}/{ti}: loss={l}, w0={w0}, w1={w1}".format(bi=n_iter, ti=max_iters - 1, l=loss, w0=w[0], w1=w[1]))
+
+    return w, loss
+
+
+def mean_squared_error_sgd(y, tx, initial_w, max_iters, gamma, batch_size=1):
+    # Define parameters to store w and loss
+    ws = [initial_w]
+    losses = []
+    w = initial_w
+
+    for n_iter in range(max_iters):
+
+        for batch_y, batch_tx in batch_iter(y, tx, batch_size):
+            grad = compute_gradient(batch_y, batch_tx, w)
+            # In SGD loss is computed only on sampled data
+
+            w = w - gamma * grad
+
+            loss = compute_loss(batch_y, batch_tx, w)
+
+        # store w and loss
+        ws.append(w)
+        losses.append(loss)
+
+        # print("SGD iter. {bi}/{ti}: loss={l}, w0={w0}, w1={w1}".format(bi=n_iter, ti=max_iters - 1, l=loss, w0=w[0], w1=w[1]))
+    return w, loss
+
+
+def least_squares(y, tx):
+    a = tx.T @ tx
+    b = tx.T @ y
+    w_opt = np.linalg.solve(a, b)
+    loss_opt = compute_loss(y, tx, w_opt)
+    return w_opt, loss_opt
+
+
 def ridge_regression(y, tx, lambda_):
     lambda_prime = lambda_ * 2 * len(y)
     a = tx.T @ tx + lambda_prime * np.eye(len(tx.T))

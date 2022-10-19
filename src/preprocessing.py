@@ -71,25 +71,3 @@ def get_explained_variance(x, var_needed):
     # print(var_explained)
 
     return W
-
-
-def build_poly(x, degree):
-    """polynomial basis functions for input data x, for j=0 up to j=degree."""
-    # ***************************************************
-    # INSERT YOUR CODE HERE
-    # polynomial basis function: TODO
-    # this function should return the matrix formed
-    # by applying the polynomial basis to the input data
-    # ***************************************************
-    poly = np.hstack([np.vstack(x**d) for d in range(1, degree + 1)])
-    return poly
-
-
-def log_features(x):
-    for i in range(len(x)):
-        for j in range(len(x[0])):
-            if x[i][j] > 0:
-                x[i][j] = np.log(x[i][j])
-            elif x[i][j] < 0:
-                x[i][j] = -np.log(-x[i][j])
-    return x

@@ -91,7 +91,6 @@ def test_black_format(github_repo_path: pathlib.Path):
             pass
 
 
-@pytest.mark.skip(reason="Not implemented yet - please enable once no TODOs left")
 def test_no_todo_left(github_repo_path: pathlib.Path):
     python_files = set(github_repo_path.glob("**/*.py")) - set(
         github_repo_path.glob("test/test_project1_public.py")
@@ -101,7 +100,6 @@ def test_no_todo_left(github_repo_path: pathlib.Path):
         assert "todo" not in content.lower(), f"Solve remaining TODOs in {python_file}."
 
 
-@pytest.mark.skip(reason="Not implemented yet - please enable once it is implemented")
 def test_mean_squared_error_gd_0_step(student_implementations, y, tx):
     expected_w = np.array([[0.413044], [0.875757]])
     w, loss = student_implementations.mean_squared_error_gd(y, tx, expected_w, 0, GAMMA)
@@ -115,7 +113,6 @@ def test_mean_squared_error_gd_0_step(student_implementations, y, tx):
     assert w.shape == expected_w.shape
 
 
-@pytest.mark.skip(reason="Not implemented yet - please enable once it is implemented")
 def test_mean_squared_error_gd(student_implementations, y, tx, initial_w):
     w, loss = student_implementations.mean_squared_error_gd(
         y, tx, initial_w, MAX_ITERS, GAMMA
@@ -130,7 +127,6 @@ def test_mean_squared_error_gd(student_implementations, y, tx, initial_w):
     assert w.shape == expected_w.shape
 
 
-@pytest.mark.skip(reason="Not implemented yet - please enable once it is implemented")
 def test_mean_squared_error_sgd(student_implementations, y, tx, initial_w):
     # n=1 to avoid stochasticity
     w, loss = student_implementations.mean_squared_error_sgd(
@@ -146,7 +142,6 @@ def test_mean_squared_error_sgd(student_implementations, y, tx, initial_w):
     assert w.shape == expected_w.shape
 
 
-@pytest.mark.skip(reason="Not implemented yet - please enable once it is implemented")
 def test_least_squares(student_implementations, y, tx):
     w, loss = student_implementations.least_squares(y, tx)
 
