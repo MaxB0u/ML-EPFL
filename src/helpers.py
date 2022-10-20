@@ -2,23 +2,23 @@ import numpy as np
 import math
 
 
-def compute_loss(y, tx, w):
+def compute_mse_loss(y, tx, w):
     # Compute MSE loss
-
-    e = y - tx @ w
+    e = y - (tx @ w)
     loss = 1 / (2 * len(y)) * (e.T @ e)
 
     return loss[0][0]
 
 
 def compute_loss_mae(y, tx, w):
-    # Compute MAE loss
-    e = y - tx @ w
+    """Compute MAE loss"""
+    e = y - (tx @ w)
     loss = np.mean(np.abs(e))
     return loss
 
 
 def compute_loss_logistic(y, tx, w, lambda_=0):
+    """Compute the cross-entropy loss for logistic regression"""
     # Compute loss for logistic regression
     # Assumes y is either 0 or 1
     # loss = - y.T @ np.log(sigma(tx, w)) - (1 - y.T) @ np.log(1 - sigma(tx, w))
@@ -30,8 +30,16 @@ def compute_loss_logistic(y, tx, w, lambda_=0):
     #    else:
     #        loss = math.log(1 + math.exp(-z[0])) - math.log(math.exp(-z[0]))
     # loss -= y.T @ z
-    loss = np.sum(np.log(1 + np.exp(Z))) - y.T @ Z
-    return loss[0][0] / len(y) + lambda_ * np.sum(np.square(w))
+    sig = sigmoid(Z)
+    num_samples = y.shape[0]
+    cross_entropy_loss = (
+        -1
+        * np.sum(
+            y * np.log(sig) + (np.ones(y.shape) - y) * np.log(np.ones(sig.shape) - sig)
+        )
+        / (num_samples)
+    )
+    return cross_entropy_loss
 
 
 def load_data():
@@ -83,23 +91,16 @@ def build_model_data(x, y):
 def compute_gradient_logistic(y, tx, w):
     """Computes the gradient at w."""
     # w is 1xd, tx is nxd -> sigma is 1xn
-    sig = sigmoid(tx, w)
+    sig = sigmoid(tx @ w)
     # sigma is nx1, y is nx1, tx is nxd -> grad is 1xd
     grad = tx.T @ (sig - y)
 
     return grad / len(y)
 
 
-def sigmoid(tx, w):
-    # To prevent overflow
-    Z = tx @ w
-    # for z in Z:
-    #    if z[0] < 0:
-    #        sig = math.exp(z[0]) / (1 + math.exp(z[0]))
-    #    else:
-    #        sig = 1 / (1 + math.exp(-z[0]))
-    # return sig
-    return 1 / (1 + np.exp(-Z))
+def sigmoid(t):
+    """Sigmod of a scalar, or possibly sigmoid applied element-wise to a vector"""
+    return np.exp(t) / (1 + np.exp(t))
 
 
 def batch_iter(y, tx, batch_size=1, num_batches=1, shuffle=True):
@@ -189,122 +190,31 @@ def replace_invalid_values(x):
     return x
 
 
+def compute_gradient_mse_loss_function(y, tx, w):
+    """Computes the gradient at w for the mean square loss error function"""
 
-
-def compute_mse_loss(y, tx, w):
-    
-    """Calculate the loss using either MSE or MAE.
-
-    Args:
-        y: numpy array of shape=(N, )
-        tx: numpy array of shape=(N,2)
-        w: numpy array of shape=(2,). The vector of model parameters.
-
-    Returns:
-        the value of the loss (a scalar), corresponding to the input parameters w.
-    """
-    error = y - tx@ w
-    mse = np.sum(np.square(error))
     num_samples = y.shape[0]
-    return mse/(2*num_samples)
-
-def compute_gradient_linear_regression(y, tx, w):
-    """Computes the gradient at w.
-        
-    Args:
-        y: numpy array of shape=(N, )
-        tx: numpy array of shape=(N,2)
-        w: numpy array of shape=(2, ). The vector of model parameters.
-        
-    Returns:
-        An numpy array of shape (2, ) (same shape as w), containing the gradient of the loss at w.
-    """
-
-    num_data_points = y.shape[0]
-    error = y - tx@ w
-    gradient = -1*((np.transpose(tx))@ error)/(num_data_points)
+    error = y - (tx @ w)
+    gradient = -1 * (tx.transpose() @ error) / (num_samples)
     return gradient
-    
 
-def gradient_descent(y, tx, initial_w, max_iters, gamma):
-    """The Gradient Descent (GD) algorithm.
-        
-    Args:
-        y: numpy array of shape=(N, )
-        tx: numpy array of shape=(N,2)
-        initial_w: numpy array of shape=(2, ). The initial guess (or the initialization) for the model parameters
-        max_iters: a scalar denoting the total number of iterations of GD
-        gamma: a scalar denoting the stepsize
-        
-    Returns:
-        losses: a list of length max_iters containing the loss value (scalar) for each iteration of GD
-        ws: a list of length max_iters containing the model parameters as numpy arrays of shape (2, ), for each iteration of GD 
-    """
-
-    ws = [initial_w]
-    losses = []
-    w = initial_w
-    for n_iter in range(max_iters):
-        gradient = compute_gradient_linear_regression(y, tx, w)
-        loss = compute_mse_loss(y, tx, w)
-        w = w - gamma*gradient
-        ws.append(w)
-        losses.append(loss)
-    return losses, ws
 
 def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
-    """
-    Generate a minibatch iterator for a dataset.
-    Takes as input two iterables (here the output desired values 'y' and the input data 'tx')
-    Outputs an iterator which gives mini-batches of `batch_size` matching elements from `y` and `tx`.
-    Data can be randomly shuffled to avoid ordering in the original data messing with the randomness of the minibatches.
-    Example of use :
-    for minibatch_y, minibatch_tx in batch_iter(y, tx, 32):
-        <DO-SOMETHING>
-    """
+    """Generate a minibatch iterator for a dataset."""
+
     data_size = len(y)
 
     if shuffle:
         shuffle_indices = np.random.permutation(np.arange(data_size))
         shuffled_y = y[shuffle_indices]
         shuffled_tx = tx[shuffle_indices]
+
     else:
         shuffled_y = y
         shuffled_tx = tx
+
     for batch_num in range(num_batches):
         start_index = batch_num * batch_size
         end_index = min((batch_num + 1) * batch_size, data_size)
         if start_index != end_index:
             yield shuffled_y[start_index:end_index], shuffled_tx[start_index:end_index]
-
-
-
-def stochastic_gradient_descent_linear_regression(y, tx, initial_w, batch_size, max_iters, gamma):
-    """The Stochastic Gradient Descent algorithm (SGD).
-            
-    Args:
-        y: numpy array of shape=(N, )
-        tx: numpy array of shape=(N,2)
-        initial_w: numpy array of shape=(2, ). The initial guess (or the initialization) for the model parameters
-        batch_size: a scalar denoting the number of data points in a mini-batch used for computing the stochastic gradient
-        max_iters: a scalar denoting the total number of iterations of SGD
-        gamma: a scalar denoting the stepsize
-        
-    Returns:
-        losses: a list of length max_iters containing the loss value (scalar) for each iteration of SGD
-        ws: a list of length max_iters containing the model parameters as numpy arrays of shape (2, ), for each iteration of SGD 
-    """
-
-    ws = [initial_w]
-    losses = []
-    w = initial_w
-    
-    for n_iter in range(max_iters):
-        iterator = batch_iter(y, tx, batch_size)
-        loss = compute_mse_loss(y, tx, w)
-        y_batch, x_batch = next(iterator)
-        stoch_gradient = compute_gradient_linear_regression(y_batch, x_batch, w)
-        w = w - gamma*stoch_gradient
-        losses.append(loss)
-        ws.append(w)
-    return losses, ws

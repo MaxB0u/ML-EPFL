@@ -6,13 +6,14 @@ import pytest
 from conftest import ATOL, GITHUB_LINK, RTOL
 
 FUNCTIONS = [
-    # "mean_squared_error_gd",
-    # "mean_squared_error_sgd",
-    # "least_squares",
-    # "ridge_regression",
+    "mean_squared_error_gd",
+    "mean_squared_error_sgd",
+    "least_squares",
+    "ridge_regression",
     "logistic_regression",
     "reg_logistic_regression",
 ]
+
 
 MAX_ITERS = 2
 GAMMA = 0.1
@@ -37,12 +38,18 @@ def tx():
     reason="Currently using a private Github repository - enable this before submission"
 )
 def test_github_link_format():
-    assert GITHUB_LINK.startswith(
-        "https://github.com/"
-    ), "Please provide a Github link."
-    assert (
-        "tree" in GITHUB_LINK
-    ), "Please provide a Github link ending with .../tree/... for the submission."
+    assert GITHUB_LINK.startswith("https://github.com/"), (
+        "Please provide a Github link. "
+        "Note that you can ignore this failing test while developing your project but you should pass "
+        "this test with the URL you submit for grading."
+    )
+    assert "tree" in GITHUB_LINK, (
+        "Please provide a Github link to a precise commit and not to a repository (URL ending with .../tree/...). "
+        "Note that you can ignore this failing test while developing your project but you should pass "
+        "this test with the URL you submit for grading. "
+        "To obtain the URL with the right format, press the `y` key in your browser on the Github page of your "
+        "repo and copy the new URL in the browser bar."
+    )
 
 
 @pytest.mark.parametrize("filename", ("README.md", "implementations.py"))
@@ -91,17 +98,15 @@ def test_black_format(github_repo_path: pathlib.Path):
             pass
 
 
-@pytest.mark.skip(reason="Not implemented yet - please enable once no TODOs left")
 def test_no_todo_left(github_repo_path: pathlib.Path):
-    python_files = set(github_repo_path.glob("**/*.py")) - set(
-        github_repo_path.glob("test/test_project1_public.py")
-    )
+    python_files = list(github_repo_path.glob("**/*.py"))
     for python_file in python_files:
+        if python_file.name == pathlib.Path(__file__).name:
+            continue  # ignore this file for TODO checks
         content = python_file.read_text()
         assert "todo" not in content.lower(), f"Solve remaining TODOs in {python_file}."
 
 
-@pytest.mark.skip(reason="Not implemented yet - please enable once it is implemented")
 def test_mean_squared_error_gd_0_step(student_implementations, y, tx):
     expected_w = np.array([[0.413044], [0.875757]])
     w, loss = student_implementations.mean_squared_error_gd(y, tx, expected_w, 0, GAMMA)
@@ -115,7 +120,6 @@ def test_mean_squared_error_gd_0_step(student_implementations, y, tx):
     assert w.shape == expected_w.shape
 
 
-@pytest.mark.skip(reason="Not implemented yet - please enable once it is implemented")
 def test_mean_squared_error_gd(student_implementations, y, tx, initial_w):
     w, loss = student_implementations.mean_squared_error_gd(
         y, tx, initial_w, MAX_ITERS, GAMMA
@@ -130,7 +134,6 @@ def test_mean_squared_error_gd(student_implementations, y, tx, initial_w):
     assert w.shape == expected_w.shape
 
 
-@pytest.mark.skip(reason="Not implemented yet - please enable once it is implemented")
 def test_mean_squared_error_sgd(student_implementations, y, tx, initial_w):
     # n=1 to avoid stochasticity
     w, loss = student_implementations.mean_squared_error_sgd(
@@ -146,7 +149,6 @@ def test_mean_squared_error_sgd(student_implementations, y, tx, initial_w):
     assert w.shape == expected_w.shape
 
 
-@pytest.mark.skip(reason="Not implemented yet - please enable once it is implemented")
 def test_least_squares(student_implementations, y, tx):
     w, loss = student_implementations.least_squares(y, tx)
 
@@ -220,7 +222,7 @@ def test_reg_logistic_regression(student_implementations, y, tx, initial_w):
         y, tx, lambda_, initial_w, MAX_ITERS, GAMMA
     )
 
-    expected_loss = 1.237635
+    expected_loss = 0.972165
     expected_w = np.array([[0.216062], [0.467747]])
 
     np.testing.assert_allclose(loss, expected_loss, rtol=RTOL, atol=ATOL)
@@ -237,7 +239,7 @@ def test_reg_logistic_regression_0_step(student_implementations, y, tx):
         y, tx, lambda_, expected_w, 0, GAMMA
     )
 
-    expected_loss = 2.287028
+    expected_loss = 1.407327
 
     np.testing.assert_allclose(loss, expected_loss, rtol=RTOL, atol=ATOL)
     np.testing.assert_allclose(w, expected_w, rtol=RTOL, atol=ATOL)
