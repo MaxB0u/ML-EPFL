@@ -2,23 +2,23 @@ import numpy as np
 import math
 
 
-def compute_loss(y, tx, w):
+def compute_mse_loss(y, tx, w):
     # Compute MSE loss
-
-    e = y - tx @ w
+    e = y - (tx @ w)
     loss = 1 / (2 * len(y)) * (e.T @ e)
 
     return loss[0][0]
 
 
 def compute_loss_mae(y, tx, w):
-    # Compute MAE loss
-    e = y - tx @ w
+    """Compute MAE loss"""
+    e = y - (tx @ w)
     loss = np.mean(np.abs(e))
     return loss
 
 
 def compute_loss_logistic(y, tx, w, lambda_=0):
+    """Compute the cross-entropy loss for logistic regression"""
     # Compute loss for logistic regression
     # Assumes y is either 0 or 1
     # loss = - y.T @ np.log(sigma(tx, w)) - (1 - y.T) @ np.log(1 - sigma(tx, w))
@@ -30,8 +30,16 @@ def compute_loss_logistic(y, tx, w, lambda_=0):
     #    else:
     #        loss = math.log(1 + math.exp(-z[0])) - math.log(math.exp(-z[0]))
     # loss -= y.T @ z
-    loss = np.sum(np.log(1 + np.exp(Z))) - y.T @ Z
-    return loss[0][0] / len(y) + lambda_ * np.sum(np.square(w))
+    sig = sigmoid(Z)
+    num_samples = y.shape[0]
+    cross_entropy_loss = (
+        -1
+        * np.sum(
+            y * np.log(sig) + (np.ones(y.shape) - y) * np.log(np.ones(sig.shape) - sig)
+        )
+        / (num_samples)
+    )
+    return cross_entropy_loss
 
 
 def load_data():
@@ -83,23 +91,16 @@ def build_model_data(x, y):
 def compute_gradient_logistic(y, tx, w):
     """Computes the gradient at w."""
     # w is 1xd, tx is nxd -> sigma is 1xn
-    sig = sigmoid(tx, w)
+    sig = sigmoid(tx @ w)
     # sigma is nx1, y is nx1, tx is nxd -> grad is 1xd
     grad = tx.T @ (sig - y)
 
     return grad / len(y)
 
 
-def sigmoid(tx, w):
-    # To prevent overflow
-    Z = tx @ w
-    # for z in Z:
-    #    if z[0] < 0:
-    #        sig = math.exp(z[0]) / (1 + math.exp(z[0]))
-    #    else:
-    #        sig = 1 / (1 + math.exp(-z[0]))
-    # return sig
-    return 1 / (1 + np.exp(-Z))
+def sigmoid(t):
+    """Sigmod of a scalar, or possibly sigmoid applied element-wise to a vector"""
+    return np.exp(t) / (1 + np.exp(t))
 
 
 def batch_iter(y, tx, batch_size=1, num_batches=1, shuffle=True):
@@ -207,3 +208,34 @@ def log_features(x):
             elif x[i][j] < 0:
                 x[i][j] = -np.log(-x[i][j])
     return x
+
+
+def compute_gradient_mse_loss_function(y, tx, w):
+    """Computes the gradient at w for the mean square loss error function"""
+
+    num_samples = y.shape[0]
+    error = y - (tx @ w)
+    gradient = -1 * (tx.transpose() @ error) / (num_samples)
+    return gradient
+
+
+def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
+    """Generate a minibatch iterator for a dataset."""
+
+    data_size = len(y)
+
+    if shuffle:
+        shuffle_indices = np.random.permutation(np.arange(data_size))
+        shuffled_y = y[shuffle_indices]
+        shuffled_tx = tx[shuffle_indices]
+
+    else:
+        shuffled_y = y
+        shuffled_tx = tx
+
+    for batch_num in range(num_batches):
+        start_index = batch_num * batch_size
+        end_index = min((batch_num + 1) * batch_size, data_size)
+        if start_index != end_index:
+            yield shuffled_y[start_index:end_index], shuffled_tx[start_index:end_index]
+
