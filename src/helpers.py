@@ -159,8 +159,8 @@ def compute_hessian_logistic(tx, w):
         h: shape(D, D) -> The Hessian of X
     """
     z = sigmoid(tx @ w)
-    s = np.diag((z * (1 - z)).T[0])
-    h = tx.T @ s @ tx
+    s = (z * (1 - z)).T[0]
+    h = (tx.T * s) @ tx
 
     return 0.5 * h
 
