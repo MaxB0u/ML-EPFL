@@ -1,6 +1,7 @@
 from src.train import *
 from src.test import *
 from src.preprocessing import *
+from src.plots import *
 import sys
 
 
@@ -42,6 +43,21 @@ def train_model(path_dataset_tr, model_name, experimenting=False):
     Returns:
         w: shape=(D, 1) -> The trained weights of the model
     """
+
+    if model_name == "KNN" or model_name == "knn":
+        x, y, _ = preprocess_knn(path_dataset_tr)
+        params = dict()
+        num_neighbors = range(1, 7, 2)
+        best_k = 1
+        best_acc = 0
+        for k in num_neighbors:
+            params["k"] = k
+            kfold = KFoldCrossValidation(x, y, model_name, params)
+            _, acc_val_avg = kfold.knn()
+            if acc_val_avg > best_acc:
+                best_k = k
+        return best_k
+
     x, y, _ = preprocess(path_dataset_tr)
     # y should be either 0 or 1 when training
     y = (y > 0) * 1.0
@@ -135,6 +151,26 @@ def test_model(path_dataset_te, model_name, trained_weights):
     predictions = test(x, trained_weights, model_name, data_id)
 
     return predictions
+
+
+def visualize(model_name="knn"):
+    if model_name == "knn" or model_name == "KNN":
+        x_tr, y_tr, _ = preprocess_knn("./dataset/train.csv")
+        k_indices = build_k_indices(y_tr, 1)
+        x_tr = scale(x_tr)
+
+        # Shuffle data before sampling
+        x_tr = x_tr[k_indices[0], :2]
+        y_tr = y_tr[k_indices[0], :2]
+        # Sample
+        sample = 2500
+
+        print(x_tr.shape)
+        print(x_tr[:, 0])
+        print(x_tr[:, 1])
+
+        k = 3
+        visualize_knn(y_tr, x_tr, 3)
 
 
 # Run the script

@@ -417,3 +417,39 @@ def get_pca_transformation(x, var_needed):
     # print(var_explained)
 
     return W
+
+
+def get_euclidean_distance(x1, x2):
+    """Get the squared euclidean distance for KNN
+
+        Args:
+        x1: shape(1,D) -> first data point
+        x2: shape(1,D) -> second data point
+
+    Returns:
+        dist: float -> Euclidean distance between x1 and x2
+    """
+    dist = np.sum(np.square(x1 - x2), axis=1)
+    return dist
+
+
+def predict_knn(y, x_tr, x_te, k):
+    """Get the k nearest neighbors of x_te
+
+        Args:
+        y : shape(N,1) -> y-data of training data
+        x_tr: shape(N,D) -> x-data used for training
+        x_te: shape(N',D) -> x-data used for validation or testing
+        k: int -> Number of nearest neighbors to keep, should be odd
+
+    Returns:
+        neighbors: shape(N',k) -> class of the k nearest neighbors for each of the testing data points
+    """
+    predictions = np.zeros(len(x_te))
+    for i in range(len(x_te)):
+        distances = get_euclidean_distance(x_tr, x_te[i])
+        idx = np.argpartition(distances, k)
+        pred = np.sign((np.mean(y[idx[:k]]) - 0.5))
+        predictions[i] = pred
+
+    return predictions

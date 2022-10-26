@@ -1,4 +1,5 @@
 from src.helpers import *
+from src.preprocessing import preprocess_knn
 
 
 def test(x, w, model_name, data_id):
@@ -14,10 +15,14 @@ def test(x, w, model_name, data_id):
     Returns:
         res: shape(N,2) -> Data id and corresponding predictions
     """
-    pred = get_predictions(x, w, model_name)
+    if model_name == "KNN" or model_name == "knn":
+        x_tr, y_tr, _ = preprocess_knn("./dataset/train.csv")
+        pred = predict_knn(y_tr, x_tr, x, 5)
 
-    # Predictions are in the {-1,1} set
-    pred = np.sign(pred - 0.5)
+    else:
+        pred = get_predictions(x, w, model_name)
+        # Predictions are in the {-1,1} set
+        pred = np.sign(pred - 0.5)
 
     # id and pred are 1xn arrays
     res = np.stack((data_id.flatten(), pred.flatten()), axis=1)
