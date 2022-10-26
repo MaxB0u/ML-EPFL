@@ -44,6 +44,7 @@ def preprocess(path_dataset):
 
     return x, y, data_id
 
+
 def preprocess_knn(path_dataset):
     """Loads and preprocesses the data so it can then be used for training or testing.
     For the special case of knn.

@@ -153,21 +153,21 @@ def test_model(path_dataset_te, model_name, trained_weights):
     return predictions
 
 
-def visualize(model_name='knn'):
-    if model_name == 'knn' or model_name == 'KNN':
+def visualize(model_name="knn"):
+    if model_name == "knn" or model_name == "KNN":
         x_tr, y_tr, _ = preprocess_knn("./dataset/train.csv")
         k_indices = build_k_indices(y_tr, 1)
         x_tr = scale(x_tr)
 
         # Shuffle data before sampling
-        x_tr = x_tr[k_indices[0],:2]
-        y_tr = y_tr[k_indices[0],:2]
+        x_tr = x_tr[k_indices[0], :2]
+        y_tr = y_tr[k_indices[0], :2]
         # Sample
         sample = 2500
 
         print(x_tr.shape)
-        print(x_tr[:,0])
-        print(x_tr[:,1])
+        print(x_tr[:, 0])
+        print(x_tr[:, 1])
 
         k = 3
         visualize_knn(y_tr, x_tr, 3)
@@ -175,4 +175,3 @@ def visualize(model_name='knn'):
 
 # Run the script
 run()
-

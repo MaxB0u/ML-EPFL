@@ -108,18 +108,18 @@ class KFoldCrossValidation:
 
     def knn(self, k_folds=5, verbose=True):
         """Runs k-fold cross validation on the data for KNN.
-           Handled separately since there are no model weights or loss
-                Args:
-                    k_folds: int -> Indicates the number of folds
-                    verbose: bool -> Indicates whether to print information about the training or not
+        Handled separately since there are no model weights or loss
+             Args:
+                 k_folds: int -> Indicates the number of folds
+                 verbose: bool -> Indicates whether to print information about the training or not
 
-                Returns:
-                    weights: shape(k,D,1) -> The trained weights for each fold
-                    loss_tr: shape(k,1) -> The training loss for each fold
-                    loss_val: shape(k,1) -> The average loss for each fold
-                    loss_tr_avg: float -> The average training loss over al folds
-                    loss_val_avg: float -> The average validayion loss over al folds
-                """
+             Returns:
+                 weights: shape(k,D,1) -> The trained weights for each fold
+                 loss_tr: shape(k,1) -> The training loss for each fold
+                 loss_val: shape(k,1) -> The average loss for each fold
+                 loss_tr_avg: float -> The average training loss over al folds
+                 loss_val_avg: float -> The average validayion loss over al folds
+        """
         # Shuffle data
         k_indices = build_k_indices(self.y, k_folds)
 
@@ -138,17 +138,10 @@ class KFoldCrossValidation:
             predictions = predict_knn(y_tr, x_tr, x_val, self.params["k"])
 
             # Compute the validation accuracy
-            acc[k] = np.sum(
-                (y_val.T[0] == predictions) * 1.0
-            ) / len(y_val)
+            acc[k] = np.sum((y_val.T[0] == predictions) * 1.0) / len(y_val)
 
             if verbose:
-                print(
-                    "Fold "
-                    + str(k)
-                    + ", val acc = "
-                    + str(acc[k])
-                )
+                print("Fold " + str(k) + ", val acc = " + str(acc[k]))
 
         # average accuracy
         acc_val_avg = np.average(acc)
