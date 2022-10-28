@@ -563,3 +563,36 @@ def predict_knn(y, x_tr, x_te, k):
         predictions[i] = pred
 
     return predictions
+
+
+def get_raw_data(path_dataset):
+    """Load data and convert it to the metric system.
+
+    Args:
+        path_dataset:  str -> Path to load the dataset from
+        x_cols: tuple -> Tuple with the number of all the columns to use for the x-data in the dataset
+        y_col: tuple -> Tuple with the number of the column to use in the dataset as the y-data
+        id_col: tuple -> Tuple with the number of the column to use in the dataset as the IDs
+
+    Returns:
+        x: shape(N,D) -> Preprocessed x-data
+        y: shape(N,1) -> Preprocessed y-data
+        data_id: shape(N,1) -> IDs of the x and y data
+    """
+
+    x = np.genfromtxt(path_dataset, delimiter=",", usecols=tuple(range(2, 32)))
+
+    return x
+
+
+def get_f1_score(y, y_hat):
+    TP, FP, FN = 0, 0, 0
+    for i in range(len(y)):
+        TP += (y[i] == y_hat[i] and y[i] == 1) * 1.0
+        FP += (y[i] != y_hat[i] and y_hat[i] == 1) * 1.0
+        FN += (y[i] != y_hat[i] and y_hat[i] == -1) * 1.0
+
+    precision = TP / (TP + FP)
+    recall = TP / (TP + FN)
+    f1 = 2 * (precision * recall) / (precision + recall)
+    return f1
