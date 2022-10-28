@@ -2,6 +2,7 @@ from src.train import *
 from src.test import *
 from src.preprocessing import *
 from src.plots import *
+from src.helpers import *
 import sys
 
 
@@ -171,6 +172,39 @@ def visualize(model_name="knn"):
 
         k = 3
         visualize_knn(y_tr, x_tr, 3)
+
+    elif model_name == "logistic_regression":
+        x, y, _ = preprocess("./dataset/train.csv")
+        # y should be either 0 or 1 when training
+        y = (y > 0) * 1.0
+
+        params = {"max_iters": 250, "gamma": 0.036, "lambda_": 0.00, "split_ratio": 0.9}
+        losses_tr, losses_val = compare_train_validation_err_logistic(x, y, params)
+
+        # Visualise the losses collected over the training iterations
+        plot_train_validation_losses(np.array(losses_tr), np.array(losses_val))
+
+
+def visualize_feature_covariance(path_dataset_tr):
+    """
+    Generates a visualisation plot for the correlation heatmap of the input features
+
+    Args:
+        path_dataset_tr:    str -> Path to the train dataset
+
+    Returns:
+        Shows a heatmap that represents the correlation coefficients amongst input features
+    """
+    columns_with_input_features = tuple(range(2, 32))
+    y_column = 1
+    id_column = 0
+
+    x_tr, y_tr, _ = load_data(
+        path_dataset_tr, columns_with_input_features, y_column, id_column
+    )
+    feature_headers = load_headers(path_dataset_tr, columns_with_input_features)
+
+    plot_features_covariance(x_tr, feature_headers)
 
 
 # Run the script
