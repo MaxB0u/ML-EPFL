@@ -1,7 +1,6 @@
 # ML-EPFL
 Solutions to Machine Learning Projects at EPFL\
 Link to the [dataset and submission platform](https://www.aicrowd.com/challenges/epfl-machine-learning-higgs).\
-Register for this using your **EPFL email address** so that we can create a team for our submissions.
 
 # Project Structure
 - `src` directory contains all files related to the source code.
@@ -22,6 +21,13 @@ For detailed information on the semantics of the features, labels, and weights, 
 - Variables prefixed with `PRI` (for PRImitives) are “raw” quantities about the bunch collision as measured by the detector.
 - Variables prefixed with `DER` (for DERived) are quantities computed from the primitive features, which were selected by the physicists of `ATLAS`.
 - It can happen that for some entries some variables are meaningless or cannot be computed; in this case, their value is −999.0, which is outside the normal range of all variables.`
+
+# Running the Code
+
+- Make sure that the train.csv and the test.csv files are in the /dataset folder.
+- Execute the run.py file in the top level directory. 
+- Wait a few minutes as the model does 5-fold cross validations on differrent values of gamma.
+- The performance on the testing set may vary slightly due to randmoness in our trainnig process.
 
 # Pipeline Summary
 
