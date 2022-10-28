@@ -27,13 +27,13 @@ For detailed information on the semantics of the features, labels, and weights, 
 
 Here are the main steps that are executed when the run.py script is launched.
 ## Training
-- Loading data from the train.csv file
+- Loading data from the train.csv file in the /dataset folder
 - Data preprocessing
 - Grid-search for the best hyperparameters with kfold cross validation for each hyperparameter combination. Note that in our final submission, the best hyperparameters have already been determined and this step is skipped
 - Using the best hyperparameters, retrain the model over the whole dataset
 
 ## Testing
-- Loading data from the test.csv file
+- Loading data from the test.csv file in the /dataset folder
 - Data preprocessing
 - Label prediction
 - Write restuls to the submission.csv file in the /dataset folder
