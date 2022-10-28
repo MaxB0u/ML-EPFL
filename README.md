@@ -42,7 +42,7 @@ Here are the main steps that are executed when the run.py script is launched.
 
 ## Final Model
 
-Here is a description of the preprocessing steps that gave us the best accuracy. 
+Here is a description of the preprocessing steps that gave us the best performance. 
 
 - Feature selection: Only the DER features are used from the dataset. The PRI features were highly correlated with them and gave little new predictive information to our models. The training was faster and the results slightly better when the PRI features were dropped.
 - Replacing invalid values: Each invalid value (-999.0) is replaced by the median value of its corresponding feature
