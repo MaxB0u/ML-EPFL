@@ -77,6 +77,24 @@ def load_data(path_dataset, x_cols, y_col, id_col):
     return x, y, data_id
 
 
+def load_headers(path_dataset, column_indxs):
+    """Loads the headers in the dataset file
+
+    Args:
+        path_dataset:   str -> Path to the file containing the dataset
+        column_indxs:   Tuple -> Tuple with the indexes of columns that contains feature information
+
+    Returns:
+        headers:    List -> Returns the list of header names for the dataset
+    """
+    with open(path_dataset, "r") as datareader:
+        header_line = datareader.readline().strip()
+        headers = header_line.split(",")
+        headers = [headers[c_idx] for c_idx in column_indxs]
+
+        return headers
+
+
 def standardize(x):
     """Standardize the original data set.
 
@@ -399,6 +417,12 @@ def get_pca_transformation(x, var_needed):
     cov = np.cov(x.T)
     eig_val, eig_vect = np.linalg.eig(cov)
 
+    # Sort eigenvectors based on the descencing order of their corresponding eigenvalues
+    # That way we could capture the required cumulative variance in the least number of components
+    idx = eig_val.argsort()[::-1]
+    eig_val = eig_val[idx]
+    eig_vect = eig_vect[:, idx]
+
     var_explained = []
     sum_eig = sum(eig_val)
     for eig in eig_val:
@@ -417,6 +441,92 @@ def get_pca_transformation(x, var_needed):
     # print(var_explained)
 
     return W
+
+
+def get_pca_transformation_with_dim(x, expected_dim):
+    """Get the transformation matrix of the input to be used for PCA.
+
+        Args:
+        x: shape(N,D) -> x-data
+        expected_dim: Int -> The final dimension of features D'
+
+    Returns:
+        W: shape(D,D') -> Transformation matrix for X
+    """
+    cov = np.cov(x.T)
+    eig_val, eig_vect = np.linalg.eig(cov)
+
+    # Sort eigenvectors based on the descencing order of their corresponding eigenvalues
+    # That way we could capture the required cumulative variance in the least number of components
+    idx = eig_val.argsort()[::-1]
+    eig_val = eig_val[idx]
+    eig_vect = eig_vect[:, idx]
+
+    if expected_dim > len(eig_val):
+        print(
+            "Error: Expected dimenstions {}, Number of eigenvalues in the input {}".format(
+                expected_dim, len(eig_val)
+            )
+        )
+        return None
+
+    W = (eig_vect[:expected_dim][:]).T
+    # print(var_explained)
+
+    return W
+
+
+def compare_train_validation_err_logistic(x, y, params):
+    """
+    Splits data into training and validation for logistic regression to compare the loss values
+    over different training iterations
+
+    Args:
+        y: shape(N,1) -> y-data
+        x: shape(N,D) -> x-data
+        params: dict -> training / validation parameters
+
+    Returns:
+        losses_tr, losses_val:  Tuple[np.array, np.array]: Tuple of training and validation losses
+        over multiple training iterations
+    """
+
+    losses_tr = []
+    losses_val = []
+    max_iters = int(params["max_iters"])
+    gamma = float(params["gamma"])
+    lambda_ = float(params["lambda_"])
+    split_ratio = float(params["split_ratio"])
+    split_idx = int(y.shape[0] * split_ratio)
+    w = np.array([np.array([[0.0] for _ in range(len(x[0]))])])
+    grad = 0
+    newton_method = False
+
+    for n_iter in range(max_iters):
+        indices = np.random.permutation(np.arange(y.shape[0]))
+        y_train = y[indices[:split_idx]]
+        x_train = x[indices[:split_idx]]
+        y_val = y[indices[split_idx + 1 :]]
+        x_val = x[indices[split_idx + 1 :]]
+        # Compute gradient and loss
+        grad = compute_gradient_logistic(y_train, x_train, w)
+
+        # Update gradient
+        if newton_method:
+            # No regularization for Newton's method
+            h = compute_hessian_logistic(x_train, w)
+            diff = np.linalg.solve(h, gamma * grad)
+            w -= diff
+        else:
+            w -= gamma * (grad + 2 * lambda_ * w)
+
+        # Compute loss on training and validation sets
+        loss_tr = compute_loss_logistic(y_train, x_train, w)
+        loss_val = compute_loss_logistic(y_val, x_val, w)
+        losses_tr.append(loss_tr)
+        losses_val.append(loss_val)
+
+    return losses_tr, losses_val
 
 
 def get_euclidean_distance(x1, x2):
@@ -458,17 +568,17 @@ def predict_knn(y, x_tr, x_te, k):
 def get_raw_data(path_dataset):
     """Load data and convert it to the metric system.
 
-        Args:
-            path_dataset:  str -> Path to load the dataset from
-            x_cols: tuple -> Tuple with the number of all the columns to use for the x-data in the dataset
-            y_col: tuple -> Tuple with the number of the column to use in the dataset as the y-data
-            id_col: tuple -> Tuple with the number of the column to use in the dataset as the IDs
+    Args:
+        path_dataset:  str -> Path to load the dataset from
+        x_cols: tuple -> Tuple with the number of all the columns to use for the x-data in the dataset
+        y_col: tuple -> Tuple with the number of the column to use in the dataset as the y-data
+        id_col: tuple -> Tuple with the number of the column to use in the dataset as the IDs
 
-        Returns:
-            x: shape(N,D) -> Preprocessed x-data
-            y: shape(N,1) -> Preprocessed y-data
-            data_id: shape(N,1) -> IDs of the x and y data
-        """
+    Returns:
+        x: shape(N,D) -> Preprocessed x-data
+        y: shape(N,1) -> Preprocessed y-data
+        data_id: shape(N,1) -> IDs of the x and y data
+    """
 
     x = np.genfromtxt(path_dataset, delimiter=",", usecols=tuple(range(2, 32)))
 
