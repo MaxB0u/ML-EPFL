@@ -56,7 +56,7 @@ class KFoldCrossValidation:
 
             # Would be nice if the model was a separate class
             # See the models.py file to see the interface for it
-            w, _ = get_model_weights(x_tr, y_tr, self.params, self.model_name)
+            w, loss = get_model_weights(x_tr, y_tr, self.params, self.model_name)
             weights.append(w)
 
             # Compute the loss differnetly depending on the model
@@ -67,7 +67,7 @@ class KFoldCrossValidation:
                 loss_tr[k] = compute_loss_logistic(y_tr, x_tr, w)
                 loss_val[k] = compute_loss_logistic(y_val, x_val, w)
             else:
-                loss_tr[k] = np.sqrt(2 * compute_mse_loss(y_tr, x_tr, w))
+                loss_tr[k] = loss
                 loss_val[k] = np.sqrt(2 * compute_mse_loss(y_val, x_val, w))
 
             # Compute the training and validation accuracies

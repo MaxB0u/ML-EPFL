@@ -2,7 +2,6 @@ from src.train import *
 from src.test import *
 from src.preprocessing import *
 from src.plots import *
-import sys
 
 
 def run():
@@ -15,11 +14,7 @@ def run():
     path_dataset_tr = "./dataset/train.csv"
     path_dataset_te = "./dataset/test.csv"
 
-    # Cha=eck if a model was specified on the command line or not
-    if len(sys.argv) == 2:
-        model_name = sys.argv[1]
-    else:
-        model_name = "logistic_regression"
+    model_name = "logistic_regression"
 
     experimenting = True
 
@@ -46,17 +41,23 @@ def train_model(path_dataset_tr, model_name, experimenting=False):
 
     if model_name == "KNN" or model_name == "knn":
         x, y, _ = preprocess_knn(path_dataset_tr)
-        params = dict()
-        num_neighbors = range(1, 7, 2)
-        best_k = 1
-        best_acc = 0
-        for k in num_neighbors:
-            params["k"] = k
-            kfold = KFoldCrossValidation(x, y, model_name, params)
-            _, acc_val_avg = kfold.knn()
-            if acc_val_avg > best_acc:
-                best_k = k
-        return best_k
+        if experimenting:
+            params = dict()
+            num_neighbors = range(1, 8, 2)
+            best_k = 1
+            best_acc = 0
+            for k in num_neighbors:
+                params["k"] = k
+                kfold = KFoldCrossValidation(x, y, model_name, params)
+                _, acc_val_avg = kfold.knn()
+                if acc_val_avg > best_acc:
+                    best_k = k
+            return best_k
+        else:
+            k= 5
+            #pred = predict_knn(y, x, x, k)
+            #print(get_f1_score(y, pred))
+            return k
 
     x, y, _ = preprocess(path_dataset_tr)
     # y should be either 0 or 1 when training
@@ -77,9 +78,9 @@ def train_model(path_dataset_tr, model_name, experimenting=False):
             or model_name == "mean_squared_error_gd"
             or model_name == "mean_squared_error_sgd"
         ):
-            gammas = np.logspace(-2, -1, 5)
+            gammas = np.logspace(-1.75, -1.25, 5)
             params["initial_w"] = np.array([[0.0] for _ in range(len(x[0]))])
-            params["max_iters"] = 20
+            params["max_iters"] = 150
 
         if model_name == "ridge_regression" or model_name == "reg_logistic_regression":
             lambdas = np.logspace(-4, -1, 3)
@@ -120,9 +121,8 @@ def train_model(path_dataset_tr, model_name, experimenting=False):
     else:
         params = dict()
         params["initial_w"] = np.array([[0.0] for _ in range(len(x[0]))])
-        params["max_iters"] = 100
-        params["lambda_"] = 0.1
-        params["gamma"] = 0.01
+        params["max_iters"] = 200
+        params["gamma"] = 0.0316
 
     w, loss = get_model_weights(x, y, params, model_name)
     acc = np.sum((y == get_predictions(x, w, model_name)) * 1.0) / len(y)
@@ -171,6 +171,8 @@ def visualize(model_name="knn"):
 
         k = 3
         visualize_knn(y_tr, x_tr, 3)
+
+
 
 
 # Run the script

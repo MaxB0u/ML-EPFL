@@ -17,7 +17,9 @@ def test(x, w, model_name, data_id):
     """
     if model_name == "KNN" or model_name == "knn":
         x_tr, y_tr, _ = preprocess_knn("./dataset/train.csv")
-        pred = predict_knn(y_tr, x_tr, x, 5)
+        x_te, _, _ = preprocess_knn("./dataset/test.csv")
+        k = 5
+        pred = predict_knn(y_tr, x_tr, x_te, k)
 
     else:
         pred = get_predictions(x, w, model_name)
