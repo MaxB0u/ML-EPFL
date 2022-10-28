@@ -27,7 +27,7 @@ For detailed information on the semantics of the features, labels, and weights, 
 - Make sure that the train.csv and the test.csv files are in the /dataset folder.
 - Execute the run.py file in the top level directory. 
 - Wait a few minutes as the model trains over the whole dataset with the best hyperparameters.
-- The performance on the testing set may vary slightly due to randmoness in our trainnig process.
+- The test predictions are stored in the submission.csv file in the /dataset folder.
 
 # Pipeline Summary
 
