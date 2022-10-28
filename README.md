@@ -40,7 +40,9 @@ Here are the main steps that are executed when the run.py script is launched.
 
 # Preprocessing
 
-Here is a description of the preprocessing steps that gave us the best accuracy. A more detailed discussion on other preprocessing steps that were tried can be found in our report.
+## Final Model
+
+Here is a description of the preprocessing steps that gave us the best accuracy. 
 
 - Feature selection: Only the DER features are used from the dataset. The PRI features were highly correlated with them and gave little new predictive information to our models. The training was faster and the results slightly better when the PRI features were dropped.
 - Replacing invalid values: Each invalid value (-999.0) is replaced by the median value of its corresponding feature
@@ -49,9 +51,19 @@ Here is a description of the preprocessing steps that gave us the best accuracy.
 - Feature expansion: Polynomial feature expansion of x. The resulting vector is of shape $(N,D*d)$ where $d$ is the degree of the polynomial expansion
 - Add offset term: A new feature of all ones is prepended to x as an offset term in our models.
 
+## Other preprocessing steps that were attempted
+
+Here is a description of all the other preprocessing steps that were used during our experimentation, but were not kept for the final model as they gave worse performance.
+
+- Outlier removal: Remove all samples with outliers from the dataset. An outlier is defined as having a value that is more than $3$ standard deviations away from the mean of the feature. Outlier removal increased training and validation accuracy by $8\%$ to $10\%$ percent depending on the model used, but it decreased accuracy by almost as much on the testing set as samples with outliers could not be ignored when testing. 
+- Standardization with robust statistics: Due to the large amount of outliers in the data, we tried normalizing with the 25th percentile, 75th percentile, and the interquartile range to be more robust to outliers. Although this technique was very promising, it gave worst performance during trainig, validation, and testing and was therefore not used in the final model.
+- Changing the definition of outliers: Define outliers as values being more than $2$ standard deviations away from the mean of their feature instead of $3$. 
+- Principal COmponents Analysis: Use the eigenvalue decomposition of the input samples $x$ to learn a better and more compact representation of the features. The number of features was selected so that the new representation kept $95\%$ percent of the explained variance of the original features. PCA greatly decreased trainng time, but did not yield as good of a performance as our final feature selection method. PCA is only used for KNN, where it is crucial to limit the number of dimensions used.
+- Use different preprocesssing steps with training and testing: When using any combinations of the methods described above, we found that using different prerocssing methods for training and testing always yielded worst testing performance, even though training performance could be greatly increased.
+
 # Models
 
-Here is a list of the models that were used for the project. The best model was selected from its loss within its own model class (linear and logistic regression) and using Accuracy and F1 score between different model classes. Since different model classes use different loss functions, their loss cannot be compared directly.
+Here is a list of the models that were used for the project. The best model was selected from its loss within its own model class (linear and logistic regression, KNN) and using accuracy as well as F1 score between different model classes. Since different model classes use different loss functions, their loss cannot be compared directly.
 
 ## Linear Regression
 
@@ -64,6 +76,11 @@ Here is a list of the models that were used for the project. The best model was 
 
 - Logistic regression: Logistic regression using the gradient descent algorithm or Newton's method.
 - Logistic regression with regularization: Logistic regression using the gradient descent algorithm with L2 regularization.
+
+## K Nearest Neighbors (KNN)
+
+- Rudimentary implementation of KNN. No data structure was used for efficiently storing the data which makes the training and evaluation very slow. The class of a sampled is predicted with a majority vote from the k nearest neighbors of the sample. The distance is calculated using euclidean distance. 
+- There is an extra preprocessing step for KNN due to the underlying assumptions of the model being different. Principal component analysis (PCA) is used to reduce the dimensionality of the data since we do not have enough data to justify using all the DER features. The resulting representation has 3 (new) features constructed with PCA.
 
 # Training and Validation
 
