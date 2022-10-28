@@ -17,7 +17,7 @@ def run():
 
     model_name = "logistic_regression"
 
-    experimenting = True
+    experimenting = False
 
     print("Training model...")
     trained_weights = train_model(path_dataset_tr, model_name, experimenting)
