@@ -8,8 +8,8 @@ def mean_squared_error_gd(y, tx, initial_w, max_iters, gamma):
         y:  shape=(N, 1) -> y-data
         tx: shape=(N, D) -> x-data
         initial_w:  shape=(D, 1) -> Initial model weights
-        gamma: float -> Step-size
         max_iters: int -> Maximum number of training iterations
+        gamma: float -> Step-size
 
     Returns:
         loss: scalar number -> The final training loss
@@ -28,8 +28,6 @@ def mean_squared_error_gd(y, tx, initial_w, max_iters, gamma):
         # store w and loss
         ws.append(w)
         losses.append(loss)
-        # print("GD iter. {bi}/{ti}: loss={l}, w0={w0}, w1={w1}".format(bi=n_iter, ti=max_iters - 1, l=loss, w0=w[0],
-        # w1=w[1]))
 
     return w, loss
 
@@ -41,8 +39,8 @@ def mean_squared_error_sgd(y, tx, initial_w, max_iters, gamma, batch_size=1):
         y:  shape=(N, 1) -> y-data
         tx: shape=(N, D) -> x-data
         initial_w:  shape=(D, 1) -> Initial model weights
-        gamma: float -> Step-size
         max_iters: int -> Maximum number of training iterations
+        gamma: float -> Step-size
         batch_size: int -> Number of samples on which to calculate the gradient
 
     Returns:
@@ -69,8 +67,6 @@ def mean_squared_error_sgd(y, tx, initial_w, max_iters, gamma, batch_size=1):
         ws.append(w)
         losses.append(loss)
 
-        # print("SGD iter. {bi}/{ti}: loss={l}, w0={w0}, w1={w1}".format(bi=n_iter, ti=max_iters - 1, l=loss,
-        # w0=w[0], w1=w[1]))
     return w, loss
 
 
@@ -122,8 +118,8 @@ def logistic_regression(
         y:  shape=(N, 1) -> y-data
         tx: shape=(N, D) -> x-data
         initial_w:  shape=(D, 1) -> Initial model weights
-        gamma: float -> Step-size
         max_iters: int -> Maximum number of training iterations
+        gamma: float -> Step-size
         lambda_: float -> Regularization parameter
         newton_method: bool -> Whether to use Newton's method for gradient descent or not
 
@@ -164,7 +160,6 @@ def logistic_regression(
         # store w and loss
         ws.append(w)
         losses.append(loss)
-        # print("GD iter. {bi}/{ti}: loss={l}, w0={w0}, w1={w1}".format(bi=n_iter, ti=max_iters - 1, l=loss, w0=w[0],
 
     return ws[-1], losses[-1]
 
@@ -177,8 +172,8 @@ def reg_logistic_regression(
         y:  shape=(N, 1) -> y-data
         tx: shape=(N, D) -> x-data
         initial_w:  shape=(D, 1) -> Initial model weights
-        gamma: float -> Step-size
         max_iters: int -> Maximum number of training iterations
+        gamma: float -> Step-size
         lambda_: float -> Regularization parameter
         newton_method: bool -> Whether to use Newton's method for gradient descent or not
 

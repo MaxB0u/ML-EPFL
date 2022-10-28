@@ -3,12 +3,12 @@ from src.preprocessing import preprocess_knn
 
 
 def test(x, w, model_name, data_id):
-    """Given a pandas dataframe and a model
+    """Given an input data vector x and a model
     Predicts output on a test set and formats the output for submission
 
     Args:
         x: shape=(N, D) -> x-data
-        y:  shape=(N, 1) -> y-data
+        w: weights learned from model training
         model_name: str -> Name of the model to use
         data_id: shape(N,1) -> IDs of the data to predict on
 
@@ -45,7 +45,7 @@ def get_predictions(x, w, model_name):
     """Gets predictions using either linear or logistic regression.
     Args:
         x: shape=(N, D) -> x-data
-        y:  shape=(N, 1) -> y-data
+        w:  shape=(D, 1) -> weight vector
         model_name: str -> Name of the model to use
 
     Returns:

@@ -13,11 +13,11 @@ python3 -m pip install matplotlib
 python3 -m pip install black
 python3 -m pip install gitpython
 
-echo "Formatting the python source code files according to black formatting"
-echo "PS: https://github.com/psf/black"
+# echo "Formatting the python source code files according to black formatting"
+# echo "PS: https://github.com/psf/black"
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-black "$DIR"/
+# DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+# black "$DIR"/
 
-echo "Formatting done.."
+# echo "Formatting done.."
 echo "Local development environment setup done."
