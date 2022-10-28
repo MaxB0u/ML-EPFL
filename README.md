@@ -27,16 +27,16 @@ For detailed information on the semantics of the features, labels, and weights, 
 
 Here are the main steps that are executed when the run.py script is launched.
 ## Training
-- Loading data from the train.csv file
+- Loading data from the `train.csv` file
 - Data preprocessing
 - Grid-search for the best hyperparameters with kfold cross validation for each hyperparameter combination. Note that in our final submission, the best hyperparameters have already been determined and this step is skipped
 - Using the best hyperparameters, retrain the model over the whole dataset
 
 ## Testing
-- Loading data from the test.csv file
+- Loading data from the `test.csv` file
 - Data preprocessing
 - Label prediction
-- Write restuls to the submission.csv file in the /dataset folder
+- Write restuls to the `submission.csv` file in the `/dataset` folder
 
 # Preprocessing
 
@@ -50,6 +50,9 @@ Here is a description of the preprocessing steps that gave us the best performan
 - Standardize: Transform the data so each feature has a mean of zero and a standard deviation of one.
 - Feature expansion: Polynomial feature expansion of x. The resulting vector is of shape $(N,D*d)$ where $d$ is the degree of the polynomial expansion
 - Add offset term: A new feature of all ones is prepended to x as an offset term in our models.
+
+The correlations among `DER_` and `PRI_` features are shown in the image below:
+![Correlations](docs/feature_correlation.png)
 
 ## Other preprocessing steps that were attempted
 
@@ -88,7 +91,7 @@ The test data is loaded from the train.csv dataset and is preprocessed with the 
 
 During our experimentations, the training was searching for the best hyperparameters to use in our final model.For each model, hyperparameters included gamma, lambda, the maximum number of iterations for gradient descent, the degree of the polynomial expansion, the number of standard deviaitons from which to start clipping outliers, other values in the preprocessing steps.
 
-For each hyperparameter combination, the models were trained using K-flod cross validation. The average loss, accuracy, and F1 score over all lthe folds were used to select the best hyperparameters.
+For each hyperparameter combination, the models were trained using K-fold cross validation. The average loss, accuracy, and F1 score over all the folds were used to select the best hyperparameters.
 
 Once the best combination of hyperparameters was determined, the model was trained over the whole training set with these parameters. When modifying hyperparameters of the preprocessing steps, the preprocessing also had to be done from scartch.
 
@@ -96,11 +99,11 @@ At the end of the training, the model weights of the best model are determined. 
 
 # Testing
 
-The test data is loaded from the test.csv dataset and is preprocessed with the same steps as during the training.
+The test data is loaded from the `test.csv` file and is preprocessed with the same steps as during the training.
 
-From the trained model weights, labels are predicted on the test data. The labels and their correesponding id are then stored in the submission.csv file in the /dataset folder. That file can then be used for submission on the competition on AIcrowd and is the output of the program.
+From the trained model weights, labels are predicted on the test data. The labels and their correesponding id are then stored in the `submission.csv` file in the `/dataset` folder. That file can then be used for submission on the competition on AIcrowd and is the output of the program.
 
 # Authors
-Maxime Bourassa
-Nitish Ravishankar
-Agastya
+Maxime Bourassa\
+Nitish Ravishankar\
+Agastya Jha
