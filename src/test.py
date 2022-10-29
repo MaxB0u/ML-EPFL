@@ -1,4 +1,4 @@
-from src.helpers import *
+from src.utils import *
 from src.preprocessing import preprocess_knn
 
 

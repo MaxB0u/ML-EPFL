@@ -2,7 +2,7 @@ from src.train import *
 from src.test import *
 from src.preprocessing import *
 from src.plots import *
-from src.helpers import *
+from src.utils import *
 
 
 def run():
