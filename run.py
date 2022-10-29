@@ -25,6 +25,10 @@ def run():
     print("Testing model...")
     predictions = test_model(path_dataset_te, model_name, trained_weights)
 
+    print(
+        "Predictions have been saved in the submission.csv file in the /dataset folder"
+    )
+
     return predictions
 
 
