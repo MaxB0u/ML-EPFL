@@ -1,4 +1,4 @@
-from src.helpers import *
+from src.utils import *
 
 
 def mean_squared_error_gd(y, tx, initial_w, max_iters, gamma):

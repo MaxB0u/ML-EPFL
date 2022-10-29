@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
 from matplotlib.colors import ListedColormap
-from src.helpers import predict_knn
+from src.utils import predict_knn
 from src.test import get_predictions
 
 
