@@ -10,17 +10,17 @@ from src.test import get_predictions
 
 def visualize_knn(y, x, k):
     """
-        Given the x-data and the y-data, plot the decision boundary of KNN
-        Projects the data in 2 dimensions using PCA
+    Given the x-data and the y-data, plot the decision boundary of KNN
+    Projects the data in 2 dimensions using PCA
 
-        Args:
-            y: shape(N, 1) where N is the number of data samples
-            x: shape(N, D) where N is the number of data samples and D is the dimension of each sample
-            k: int Number of neighbors to use for predictions in KNN
+    Args:
+        y: shape(N, 1) where N is the number of data samples
+        x: shape(N, D) where N is the number of data samples and D is the dimension of each sample
+        k: int Number of neighbors to use for predictions in KNN
 
-        Returns:
-            A 2D map of the decision boundary
-        """
+    Returns:
+        A 2D map of the decision boundary
+    """
     step_size_x = 0.02
     step_size_y = 0.01
     min_max_x = 0.3
@@ -99,6 +99,21 @@ def covariance_heatmap(
     colorbar_label="",
     **kwargs
 ):
+    """
+    Given the data, plots a heatmap of the covariance between features
+    Projects the data in 2 dimensions using PCA
+
+    Args:
+        data: Dataset used for plotting
+        row_labels: Name of the rows
+        col_labels: Name of the columns
+        axis None by default
+        colorbar_properties None by default
+        colorbar_label "" by default
+
+    Returns:
+        A 2D heatmap of the covariance between features
+    """
 
     image = axis.imshow(data, **kwargs)
     if colorbar_properties == None:
@@ -127,6 +142,18 @@ def covariance_heatmap(
 
 
 def add_text_heatmap(image, data=None, dataformat="{x:.2f}", **textkw):
+    """
+    Given the data, plots a heatmap of the covariance between features
+    Projects the data in 2 dimensions using PCA
+
+    Args:
+        data: Dataset used for plotting
+        dataformat: Format of the data used for plotting
+        textkw
+
+    Returns:
+        Cell values of the heatmap
+    """
 
     data = image.get_array()
 
@@ -155,8 +182,16 @@ def plot_train_validation_losses(
     loss_tr, loss_val, loss_function_name="Cross entropy loss"
 ):
     """
-    Plots the training and validation losses over multiple training iterations to check
-    if the model overfits on training samples
+     Plots the training and validation losses over multiple training iterations to check
+     if the model overfits on training samples
+
+     Args:
+        loss_tr: Training loss
+        loss_val: Validation loss
+        loss_function_name: Name of the loss funciton that was used
+
+    Returns:
+        Train and validation losses vs the number of iterations
     """
     # Number of training iterations
     num_iterations = np.arange(len(loss_tr))
