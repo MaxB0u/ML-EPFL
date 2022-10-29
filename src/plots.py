@@ -9,6 +9,18 @@ from src.test import get_predictions
 
 
 def visualize_knn(y, x, k):
+    """
+        Given the x-data and the y-data, plot the decision boundary of KNN
+        Projects the data in 2 dimensions using PCA
+
+        Args:
+            y: shape(N, 1) where N is the number of data samples
+            x: shape(N, D) where N is the number of data samples and D is the dimension of each sample
+            k: int Number of neighbors to use for predictions in KNN
+
+        Returns:
+            A 2D map of the decision boundary
+        """
     step_size_x = 0.02
     step_size_y = 0.01
     min_max_x = 0.3
