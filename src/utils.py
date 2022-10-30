@@ -382,7 +382,7 @@ def build_poly(x, degree):
     Returns:
         poly: shape(N,D*d) -> Polynomial expansion of x
     """
-    poly = np.hstack([np.vstack(x ** d) for d in range(1, degree + 1)])
+    poly = np.hstack([np.vstack(x**d) for d in range(1, degree + 1)])
     return poly
 
 
