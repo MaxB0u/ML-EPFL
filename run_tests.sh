@@ -1,10 +1,7 @@
 # Script for running all tests under test/test_project1_public.py
 # Run the ./setup.sh script before this to ensure all required dependencies have been installed in the testing environment
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )" 
-
-black "$DIR"
-TEST_OUTPUT="$(pytest-3 --github_link "$DIR")"
+TEST_OUTPUT="$(pytest-3 --github_link https://github.com/nitishplus98/ML-EPFL/tree/main)"
 FAILURE_PATTERN="failed"
 LOG_ALL_TEST_OUTPUTS=false
 IS_GITHUB_ACTION=$1

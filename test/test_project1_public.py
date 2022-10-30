@@ -34,16 +34,13 @@ def tx():
     return np.array([[2.3, 3.2], [1.0, 0.1], [1.4, 2.3]])
 
 
-@pytest.mark.skip(
-    reason="Currently using a private Github repository - enable this before submission"
-)
 def test_github_link_format():
-    assert GITHUB_LINK.startswith("https://github.com/"), (
+    assert GITHUB_LINK.startswith("https://") and "github.com" in GITHUB_LINK, (
         "Please provide a Github link. "
         "Note that you can ignore this failing test while developing your project but you should pass "
         "this test with the URL you submit for grading."
     )
-    assert "tree" in GITHUB_LINK, (
+    assert GITHUB_LINK.split("/")[-2] == "tree", (
         "Please provide a Github link to a precise commit and not to a repository (URL ending with .../tree/...). "
         "Note that you can ignore this failing test while developing your project but you should pass "
         "this test with the URL you submit for grading. "
