@@ -1,6 +1,6 @@
 # ML-EPFL
 Solutions to Machine Learning Projects at EPFL\
-Link to the [dataset and submission platform](https://www.aicrowd.com/challenges/epfl-machine-learning-higgs).\
+Link to the [dataset and submission platform](https://www.aicrowd.com/challenges/epfl-machine-learning-higgs).
 
 # Project Structure
 - `src` directory contains all files related to the source code.
@@ -24,22 +24,22 @@ For detailed information on the semantics of the features, labels, and weights, 
 
 # Running the Code
 
-- Make sure that the train.csv and the test.csv files are in the /dataset folder.
+- Make sure that the `train.csv` and the `test.csv` files are in the `/dataset` folder.
 - Execute the run.py file in the top level directory. 
 - Wait a few minutes as the model trains over the whole dataset with the best hyperparameters.
-- The test predictions are stored in the submission.csv file in the /dataset folder.
+- The test predictions are stored in the submission.csv file in the `/dataset` folder.
 
 # Pipeline Summary
 
 Here are the main steps that are executed when the run.py script is launched.
 ## Training
-- Loading data from the train.csv file in the /dataset folder
+- Loading data from the `train.csv` file in the `/dataset` folder
 - Data preprocessing
 - Grid-search for the best hyperparameters with kfold cross validation for each hyperparameter combination. Note that in our final submission, the best hyperparameters have already been determined and this step is skipped
 - Using the best hyperparameters, retrain the model over the whole dataset
 
 ## Testing
-- Loading data from the test.csv file in the /dataset folder
+- Loading data from the `test.csv` file in the `/dataset` folder
 - Data preprocessing
 - Label prediction
 - Write restuls to the `submission.csv` file in the `/dataset` folder
