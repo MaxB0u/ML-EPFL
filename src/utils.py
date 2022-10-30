@@ -372,6 +372,7 @@ def compute_gradient(y, tx, w):
     return -1 / len(y) * (tx.T @ e)
 
 
+# fmt: off
 def build_poly(x, degree):
     """Polynomial feature expansion of x.
 
@@ -384,6 +385,7 @@ def build_poly(x, degree):
     """
     poly = np.hstack([np.vstack(x**d) for d in range(1, degree + 1)])
     return poly
+# fmt: on
 
 
 def log_features(x):
@@ -464,8 +466,9 @@ def get_pca_transformation_with_dim(x, expected_dim):
 
     if expected_dim > len(eig_val):
         print(
-            "Error: Expected dimenstions {}, Number of eigenvalues in the input {}"
-            .format(expected_dim, len(eig_val))
+            "Error: Expected dimenstions {}, Number of eigenvalues in the input {}".format(
+                expected_dim, len(eig_val)
+            )
         )
         return None
 
