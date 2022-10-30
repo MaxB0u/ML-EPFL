@@ -11,7 +11,7 @@ python3 -m pip install --upgrade pip
 python3 -m pip install --upgrade Pillow
 python3 -m pip install setuptools
 python3 -m pip install matplotlib==3.5.2
-python3 -m pip install black==22.6.0
+python3 -m pip install black==21.4b0
 python3 -m pip install gitpython==3.1.18
 python3 -m pip install pytest-mock==3.7.0
 python3 -m pip install pytest==7.1.2
