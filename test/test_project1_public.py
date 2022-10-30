@@ -36,16 +36,17 @@ def tx():
 
 def test_github_link_format():
     assert GITHUB_LINK.startswith("https://") and "github.com" in GITHUB_LINK, (
-        "Please provide a Github link. "
-        "Note that you can ignore this failing test while developing your project but you should pass "
-        "this test with the URL you submit for grading."
+        "Please provide a Github link. Note that you can ignore this failing test while"
+        " developing your project but you should pass this test with the URL you submit"
+        " for grading."
     )
     assert GITHUB_LINK.split("/")[-2] == "tree", (
-        "Please provide a Github link to a precise commit and not to a repository (URL ending with .../tree/...). "
-        "Note that you can ignore this failing test while developing your project but you should pass "
-        "this test with the URL you submit for grading. "
-        "To obtain the URL with the right format, press the `y` key in your browser on the Github page of your "
-        "repo and copy the new URL in the browser bar."
+        "Please provide a Github link to a precise commit and not to a repository (URL"
+        " ending with .../tree/...). Note that you can ignore this failing test while"
+        " developing your project but you should pass this test with the URL you submit"
+        " for grading. To obtain the URL with the right format, press the `y` key in"
+        " your browser on the Github page of your repo and copy the new URL in the"
+        " browser bar."
     )
 
 
@@ -83,13 +84,16 @@ def test_black_format(github_repo_path: pathlib.Path):
             import black
         except ModuleNotFoundError:
             raise ValueError(
-                f"We advise you to install the black formater https://github.com/psf/black and format your code with it (not mandatory)."
+                f"We advise you to install the black formater"
+                f" https://github.com/psf/black and format your code with it (not"
+                f" mandatory)."
             )
 
         try:
             black.format_file_contents(content, fast=True, mode=black.FileMode())
             raise ValueError(
-                f"We advise you to format '{python_file.name}' with the black formater https://github.com/psf/black (not mandatory)."
+                f"We advise you to format '{python_file.name}' with the black formater"
+                " https://github.com/psf/black (not mandatory)."
             )
         except black.NothingChanged:
             pass

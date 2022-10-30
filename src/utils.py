@@ -464,9 +464,8 @@ def get_pca_transformation_with_dim(x, expected_dim):
 
     if expected_dim > len(eig_val):
         print(
-            "Error: Expected dimenstions {}, Number of eigenvalues in the input {}".format(
-                expected_dim, len(eig_val)
-            )
+            "Error: Expected dimenstions {}, Number of eigenvalues in the input {}"
+            .format(expected_dim, len(eig_val))
         )
         return None
 

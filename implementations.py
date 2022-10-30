@@ -54,7 +54,6 @@ def mean_squared_error_sgd(y, tx, initial_w, max_iters, gamma, batch_size=1):
     loss = compute_mse_loss(y, tx, w)
 
     for n_iter in range(max_iters):
-
         for batch_y, batch_tx in batch_iter(y, tx, batch_size):
             grad = compute_gradient(batch_y, batch_tx, w)
             # In SGD loss is computed only on sampled data

@@ -23,7 +23,8 @@ def preprocess(path_dataset):
         x, y, data_id = load_data(path_dataset, x_col, y_col, id_col)
     except OSError:
         print(
-            "Dataset not found. Please make sure train.csv and test.csv are located in the /dataset folder"
+            "Dataset not found. Please make sure train.csv and test.csv are located in"
+            " the /dataset folder"
         )
         quit()
 

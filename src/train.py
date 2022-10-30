@@ -46,7 +46,6 @@ class KFoldCrossValidation:
         weights = []
 
         for k in range(k_folds):
-
             # Get data for the fold
             x_val = self.x[k_indices[k]]
             y_val = self.y[k_indices[k]]
@@ -127,7 +126,6 @@ class KFoldCrossValidation:
         acc = np.zeros(k_folds)
 
         for k in range(k_folds):
-
             # Get data for the fold
             x_val = self.x[k_indices[k]]
             y_val = self.y[k_indices[k]]

@@ -69,7 +69,6 @@ def train_model(path_dataset_tr, model_name, experimenting=False):
     y = (y > 0) * 1.0
 
     if experimenting:
-
         # Get the best hyperparameters
         # Gamma (and lambda if needed)
         gammas = [1.0]
